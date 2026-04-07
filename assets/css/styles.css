@@ -9,7 +9,7 @@
     ::-webkit-scrollbar-track{background:var(--z900)}
     ::-webkit-scrollbar-thumb{background:var(--z700);border-radius:99px}
 
-    /* â•â• CARD â€” Ð¿Ð»Ð°Ð²Ð½Ñ‹Ð¹ hover Ñ‡ÐµÑ€ÐµÐ· CSS â•â• */
+    /* ══ CARD — плавный hover через CSS ══ */
     .food-card{
       display:flex;flex-direction:column;
       transition: transform 0.45s cubic-bezier(0.22,1,0.36,1),
@@ -77,7 +77,7 @@
     .cats-scroll{scrollbar-width:none}
     .cats-scroll::-webkit-scrollbar{display:none}
 
-    /* â”€â”€ Ð¡Ð²ÐµÑ‚Ð»Ð°Ñ Ñ‚ÐµÐ¼Ð° â”€â”€ */
+    /* ── Светлая тема ── */
     body.light{color:#18181b}
     body.light .food-card{box-shadow:0 2px 16px rgba(0,0,0,0.08)}
     body.light .form-input{color:#18181b}
@@ -105,13 +105,14 @@
       transition:background-color 0.3s ease,color 0.3s ease,border-color 0.3s ease;
     }
 
-    /* â”€â”€ Auth modal â”€â”€ */
+    /* ── Auth modal ── */
     .auth-input{background:var(--z800);border:1.5px solid var(--z700);color:#fff;border-radius:14px;padding:12px 16px;width:100%;font-family:'DM Sans',sans-serif;font-size:15px;transition:border-color .2s;outline:none}
     .auth-input:focus{border-color:var(--amber)}
     .auth-input::placeholder{color:var(--z400)}
     .tab-active{color:#fff;border-bottom:2px solid #F59E0B}
     .tab-inactive{color:var(--z400);border-bottom:2px solid transparent}
 
-    /* ÐŸÑ€Ð¾Ñ„Ð¸Ð»ÑŒ ÐºÐ°Ñ€Ñ‚Ð¾Ñ‡ÐºÐ° */
+    /* Профиль карточка */
     .profile-stat{background:var(--z900);border:1px solid var(--z700);border-radius:16px;padding:16px;text-align:center}
+
 

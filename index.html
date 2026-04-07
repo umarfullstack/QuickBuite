@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBite â€” Ð´Ð¾ÑÑ‚Ð°Ð²ÐºÐ° ÐµÐ´Ñ‹</title>
+  <title>QuickBite — доставка еды</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -15,7 +15,7 @@
 <body>
 <div x-data class="min-h-screen hero-grad">
 
-  <!-- â–‘â–‘ AUTH MODAL â–‘â–‘ -->
+  <!-- ░░ AUTH MODAL ░░ -->
   <div x-show="$store.app.showAuth"
        @click.self="$store.app.showAuth=false"
        x-transition:enter="transition ease-out duration-200"
@@ -39,61 +39,61 @@
       </div>
 
       <div class="px-6 pb-8 pt-4">
-        <!-- Ð›Ð¾Ð³Ð¾ -->
+        <!-- Лого -->
         <div class="flex items-center gap-2 mb-5">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base">âš¡</div>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base">⚡</div>
           <span class="font-display text-lg font-700">QuickBite</span>
         </div>
 
-        <!-- Ð¢Ð°Ð±Ñ‹ -->
+        <!-- Табы -->
         <div class="flex gap-0 mb-6 border-b" style="border-color:#27272a">
           <button @click="$store.app.authPage='login'"
                   class="flex-1 pb-3 text-sm font-semibold transition"
-                  :class="$store.app.authPage==='login'?'tab-active':'tab-inactive'">Ð’Ð¾Ð¹Ñ‚Ð¸</button>
+                  :class="$store.app.authPage==='login'?'tab-active':'tab-inactive'">Войти</button>
           <button @click="$store.app.authPage='register'"
                   class="flex-1 pb-3 text-sm font-semibold transition"
-                  :class="$store.app.authPage==='register'?'tab-active':'tab-inactive'">Ð ÐµÐ³Ð¸ÑÑ‚Ñ€Ð°Ñ†Ð¸Ñ</button>
+                  :class="$store.app.authPage==='register'?'tab-active':'tab-inactive'">Регистрация</button>
         </div>
 
-        <!-- Ð¤ÐžÐ ÐœÐ Ð’Ð¥ÐžÐ”Ð -->
+        <!-- ФОРМА ВХОДА -->
         <div x-show="$store.app.authPage==='login'">
           <div class="flex flex-col gap-3 mb-4">
             <input x-model="$store.app.loginForm.email" type="email" placeholder="Email"
                    class="auth-input" @keyup.enter="$store.app.login()" />
-            <input x-model="$store.app.loginForm.password" type="password" placeholder="ÐŸÐ°Ñ€Ð¾Ð»ÑŒ"
+            <input x-model="$store.app.loginForm.password" type="password" placeholder="Пароль"
                    class="auth-input" @keyup.enter="$store.app.login()" />
           </div>
           <p x-show="$store.app.loginError" x-text="$store.app.loginError"
              class="text-xs mb-3 text-center" style="color:#f87171"></p>
           <button @click="$store.app.login()" class="btn-amber w-full py-3.5 rounded-2xl text-sm">
-            Ð’Ð¾Ð¹Ñ‚Ð¸ â†’
+            Войти →
           </button>
           <p class="text-xs text-center mt-3" style="color:var(--z400)">
-            ÐÐµÑ‚ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ð°?
-            <button @click="$store.app.authPage='register'" class="underline" style="color:#F59E0B">Ð—Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒÑÑ</button>
+            Нет аккаунта?
+            <button @click="$store.app.authPage='register'" class="underline" style="color:#F59E0B">Зарегистрироваться</button>
           </p>
         </div>
 
-        <!-- Ð¤ÐžÐ ÐœÐ Ð Ð•Ð“Ð˜Ð¡Ð¢Ð ÐÐ¦Ð˜Ð˜ -->
+        <!-- ФОРМА РЕГИСТРАЦИИ -->
         <div x-show="$store.app.authPage==='register'">
           <div class="flex flex-col gap-3 mb-4">
-            <input x-model="$store.app.regForm.name" type="text" placeholder="Ð’Ð°ÑˆÐµ Ð¸Ð¼Ñ"
+            <input x-model="$store.app.regForm.name" type="text" placeholder="Ваше имя"
                    class="auth-input" />
-            <input x-model="$store.app.regForm.phone" type="tel" placeholder="Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½"
+            <input x-model="$store.app.regForm.phone" type="tel" placeholder="Телефон"
                    class="auth-input" />
             <input x-model="$store.app.regForm.email" type="email" placeholder="Email"
                    class="auth-input" />
-            <input x-model="$store.app.regForm.password" type="password" placeholder="ÐŸÐ°Ñ€Ð¾Ð»ÑŒ (Ð¼Ð¸Ð½. 6 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð²)"
+            <input x-model="$store.app.regForm.password" type="password" placeholder="Пароль (мин. 6 символов)"
                    class="auth-input" @keyup.enter="$store.app.register()" />
           </div>
           <p x-show="$store.app.regError" x-text="$store.app.regError"
              class="text-xs mb-3 text-center" style="color:#f87171"></p>
           <button @click="$store.app.register()" class="btn-amber w-full py-3.5 rounded-2xl text-sm">
-            Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚ ðŸŽ‰
+            Создать аккаунт 🎉
           </button>
           <p class="text-xs text-center mt-3" style="color:var(--z400)">
-            Ð£Ð¶Ðµ ÐµÑÑ‚ÑŒ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚?
-            <button @click="$store.app.authPage='login'" class="underline" style="color:#F59E0B">Ð’Ð¾Ð¹Ñ‚Ð¸</button>
+            Уже есть аккаунт?
+            <button @click="$store.app.authPage='login'" class="underline" style="color:#F59E0B">Войти</button>
           </p>
         </div>
 
@@ -116,32 +116,32 @@
   <header class="sticky top-0 z-50 px-5 py-4 flex items-center justify-between"
           :style="$store.app.theme==='light'?'background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.08)':'background:rgba(9,9,11,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)'">
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base select-none">âš¡</div>
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base select-none">⚡</div>
       <span class="font-display text-xl font-800 tracking-tight"
             :style="$store.app.theme==='light'?'color:#18181b':'color:#ffffff'">QuickBite</span>
     </div>
     <div class="flex items-center gap-2">
 
-      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ñ‚ÐµÐ¼Ñ‹: Ñ‚Ñ‘Ð¼Ð½Ð°Ñ â†’ â˜€ï¸, ÑÐ²ÐµÑ‚Ð»Ð°Ñ â†’ ðŸŒ™ Ð¾Ñ€Ð°Ð½Ð¶ÐµÐ²Ð°Ñ -->
+      <!-- Кнопка темы: тёмная → ☀️, светлая → 🌙 оранжевая -->
       <button @click="$store.app.toggleTheme()"
               class="w-9 h-9 rounded-xl flex items-center justify-center"
               :style="$store.app.theme==='light'?'background:#f4f4f5;border:1px solid #d4d4d8':'background:#27272a'">
-        <!-- Ð¢Ñ‘Ð¼Ð½Ð°Ñ Ñ‚ÐµÐ¼Ð° â†’ ÑÐ¾Ð»Ð½Ñ†Ðµ -->
+        <!-- Тёмная тема → солнце -->
         <svg x-show="$store.app.theme==='dark'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
         </svg>
-        <!-- Ð¡Ð²ÐµÑ‚Ð»Ð°Ñ Ñ‚ÐµÐ¼Ð° â†’ Ð»ÑƒÐ½Ð° Ð¾Ñ€Ð°Ð½Ð¶ÐµÐ²Ð°Ñ -->
+        <!-- Светлая тема → луна оранжевая -->
         <svg x-show="$store.app.theme==='light'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
 
-      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ð¿Ñ€Ð¾Ñ„Ð¸Ð»Ñ/Ð²Ð¾Ð¹Ñ‚Ð¸ -->
+      <!-- Кнопка профиля/войти -->
       <button @click="$store.app.role==='guest'?$store.app.openAuth('login'):(($store.app.page=$store.app.role==='admin'?'admin_profile':'user_profile'),$nextTick(()=>lucide.createIcons()))"
               class="w-9 h-9 rounded-xl flex items-center justify-center transition relative"
               :style="['user','admin'].includes($store.app.role)?'background:#F59E0B':'background:#27272a'">
         <i data-lucide="user" class="w-4 h-4" :style="$store.app.role!=='guest'?'color:#000':'color:#a1a1aa'"></i>
-        <!-- Ð—Ð½Ð°Ñ‡Ð¾Ðº Ñ€Ð¾Ð»Ð¸ -->
+        <!-- Значок роли -->
         <span x-show="$store.app.role==='admin'"
               class="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold"
               style="background:#ef4444;color:#fff;font-size:8px">A</span>
@@ -175,7 +175,7 @@
        x-transition:enter-end="opacity-100 translate-y-0"
        class="mx-4 mt-2 rounded-2xl p-5" style="background:#18181b;border:1px solid #27272a">
     <div class="flex items-center justify-between mb-4">
-      <span class="font-display font-700 text-sm">âš™ï¸ Ð˜Ð½Ñ‚ÐµÐ³Ñ€Ð°Ñ†Ð¸Ð¸</span>
+      <span class="font-display font-700 text-sm">⚙️ Интеграции</span>
       <span class="text-xs" style="color:var(--z400)">Supabase local, Telegram server-side</span>
     </div>
     <div class="grid gap-3">
@@ -185,50 +185,50 @@
       </div>
       <div>
         <p class="text-xs mb-1" style="color:var(--z400)">Supabase Anon Key</p>
-        <input x-model="$store.app.config.supabaseKey" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="eyJhbGciâ€¦" />
+        <input x-model="$store.app.config.supabaseKey" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="eyJhbGci…" />
       </div>
     </div>
     <div class="mt-3 p-3 rounded-xl text-xs" style="background:#0f0f10;border:1px solid #27272a;color:var(--z400);line-height:1.6">
-      ðŸ’¡ <b style="color:#F59E0B">Supabase:</b> ÑÐ¾Ð·Ð´Ð°Ð¹ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ <code>orders</code> (customer_name, customer_phone, customer_address, items jsonb, total float, status text, created_at timestamptz).<br>
-      ðŸ’¡ <b style="color:#F59E0B">Telegram:</b> ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸ <code>TG_BOT_TOKEN</code> Ð¸ <code>TG_CHAT_ID</code> Ð² Vercel Environment Variables.
+      💡 <b style="color:#F59E0B">Supabase:</b> создай таблицу <code>orders</code> (customer_name, customer_phone, customer_address, items jsonb, total float, status text, created_at timestamptz).<br>
+      💡 <b style="color:#F59E0B">Telegram:</b> установи <code>TG_BOT_TOKEN</code> и <code>TG_CHAT_ID</code> в Vercel Environment Variables.
     </div>
     <button @click="$store.app.testTelegram()"
             class="mt-3 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition"
             style="background:#27272a;color:#a1a1aa;border:1px solid #3f3f46">
       <i data-lucide="send" class="w-4 h-4" style="color:#F59E0B"></i>
-      Ð¢ÐµÑÑ‚ Telegram â€” Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ
+      Тест Telegram — отправить сообщение
     </button>
   </div>
 
   <!-- MAIN -->
   <main class="max-w-2xl mx-auto pb-28" style="overflow-x:clip">
 
-    <!-- â• ÐœÐ•ÐÐ® â• -->
+    <!-- ═ МЕНЮ ═ -->
     <div x-show="$store.app.page==='menu'&&!$store.app.showAdmin&&!$store.app.showSettings" class="slide-up">
       <div class="mt-6 mb-6 px-4">
-        <!-- Ð“Ð¾ÑÑ‚ÑŒ -->
+        <!-- Гость -->
         <div x-show="$store.app.role==='guest'">
-          <p class="text-sm mb-1" style="color:var(--z400)">ÐŸÑ€Ð¸Ð²ÐµÑ‚ ðŸ‘‹</p>
-          <h1 class="font-display text-3xl font-800 leading-tight">Ð“Ð¾Ð»Ð¾Ð´ÐµÐ½?<br><span style="color:#F59E0B">Ð—Ð°ÐºÐ°Ð¶Ð¸ ÑÐµÐ¹Ñ‡Ð°Ñ.</span></h1>
+          <p class="text-sm mb-1" style="color:var(--z400)">Привет 👋</p>
+          <h1 class="font-display text-3xl font-800 leading-tight">Голоден?<br><span style="color:#F59E0B">Закажи сейчас.</span></h1>
           <button @click="$store.app.openAuth('login')"
                   class="mt-4 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 w-fit transition"
                   style="background:#27272a;color:#a1a1aa;border:1px solid #3f3f46">
             <i data-lucide="log-in" class="w-3.5 h-3.5" style="color:#F59E0B"></i>
-            Ð’Ð¾Ð¹Ñ‚Ð¸ Ð¸Ð»Ð¸ Ð·Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒÑÑ
+            Войти или зарегистрироваться
           </button>
         </div>
-        <!-- Ð—Ð°Ð»Ð¾Ð³Ð¸Ð½ÐµÐ½ -->
+        <!-- Залогинен -->
         <div x-show="$store.app.role!=='guest'">
           <p class="text-sm mb-1" style="color:var(--z400)">
-            <span x-show="$store.app.role==='admin'">ðŸ‘‘ ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€</span>
-            <span x-show="$store.app.role==='user'">ðŸ‘‹ ÐŸÑ€Ð¸Ð²ÐµÑ‚,</span>
+            <span x-show="$store.app.role==='admin'">👑 Администратор</span>
+            <span x-show="$store.app.role==='user'">👋 Привет,</span>
             <span x-show="$store.app.role==='user'" x-text="$store.app.currentUser?.name"></span>
           </p>
-          <h1 class="font-display text-3xl font-800 leading-tight">Ð“Ð¾Ð»Ð¾Ð´ÐµÐ½?<br><span style="color:#F59E0B">Ð—Ð°ÐºÐ°Ð¶Ð¸ ÑÐµÐ¹Ñ‡Ð°Ñ.</span></h1>
+          <h1 class="font-display text-3xl font-800 leading-tight">Голоден?<br><span style="color:#F59E0B">Закажи сейчас.</span></h1>
         </div>
       </div>
 
-      <!-- ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ -->
+      <!-- Категории -->
       <div class="flex gap-2 overflow-x-auto pb-2 mb-5 cats-scroll" style="padding-left:16px;padding-right:24px">
         <template x-for="cat in $store.app.categories" :key="cat">
           <button @click="$store.app.activeCategory=cat"
@@ -239,13 +239,13 @@
         </template>
       </div>
 
-      <!-- ÐšÐ°Ñ€Ñ‚Ð¾Ñ‡ÐºÐ¸ -->
+      <!-- Карточки -->
       <div class="grid grid-cols-2 gap-4 px-4">
         <template x-for="p in $store.app.filteredProducts" :key="p.id">
           <div class="food-card rounded-2xl overflow-hidden"
                :style="$store.app.theme==='light'?'background:#fff;border:1px solid #e4e4e7':'background:#18181b;border:1px solid #27272a'">
 
-            <!-- Ð¤Ð¾Ñ‚Ð¾ â€” overflow:hidden Ð½Ð° Ð²Ñ€Ð°Ð¿Ð¿ÐµÑ€Ðµ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ zoom Ð½Ðµ Ð²Ñ‹Ð»ÐµÐ·Ð°Ð» -->
+            <!-- Фото — overflow:hidden на враппере, чтобы zoom не вылезал -->
             <div class="card-img-wrap overflow-hidden" style="height:140px;background:#111">
               <img :src="p.img" :alt="p.name"
                    style="width:100%;height:100%;object-fit:cover;display:block"
@@ -267,7 +267,7 @@
                   <button @click="$store.app.addToCart(p)" class="btn-amber w-8 h-8 rounded-xl text-base flex items-center justify-center font-bold">+</button>
                 </div>
                 <div x-show="$store.app.cartQty(p.id)>0" class="flex items-center gap-1">
-                  <button @click="$store.app.changeQty(p.id,-1)" class="qty-btn minus">âˆ’</button>
+                  <button @click="$store.app.changeQty(p.id,-1)" class="qty-btn minus">−</button>
                   <span class="font-bold text-sm w-5 text-center" x-text="$store.app.cartQty(p.id)"></span>
                   <button @click="$store.app.changeQty(p.id,+1)" class="qty-btn plus">+</button>
                 </div>
@@ -278,7 +278,7 @@
       </div>
     </div>
 
-    <!-- â• ÐžÐ¤ÐžÐ ÐœÐ›Ð•ÐÐ˜Ð• â• -->
+    <!-- ═ ОФОРМЛЕНИЕ ═ -->
     <div x-show="$store.app.page==='checkout'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -286,33 +286,33 @@
          class="pt-6 px-4">
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-6 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
       </button>
-      <h2 class="font-display text-2xl font-700 mb-5">ÐžÑ„Ð¾Ñ€Ð¼Ð»ÐµÐ½Ð¸Ðµ</h2>
+      <h2 class="font-display text-2xl font-700 mb-5">Оформление</h2>
       <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
         <template x-for="item in $store.app.cart" :key="item.id">
           <div class="flex justify-between py-2 border-b last:border-0 text-sm" style="border-color:#27272a">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
-            <span style="color:var(--z400)">Ã—<span x-text="item.qty"></span>&nbsp;<span style="color:#F59E0B" x-text="'$'+(item.price*item.qty).toFixed(2)"></span></span>
+            <span style="color:var(--z400)">×<span x-text="item.qty"></span>&nbsp;<span style="color:#F59E0B" x-text="'$'+(item.price*item.qty).toFixed(2)"></span></span>
           </div>
         </template>
         <div class="flex justify-between pt-3">
-          <span class="font-display font-700">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
+          <span class="font-display font-700">Итого</span>
           <span class="font-display font-700" style="color:#F59E0B" x-text="'$'+$store.app.cartTotal"></span>
         </div>
       </div>
       <div class="flex flex-col gap-4">
         <div>
-          <input x-model="$store.app.form.name" type="text" placeholder="Ð’Ð°ÑˆÐµ Ð¸Ð¼Ñ" class="form-input" />
+          <input x-model="$store.app.form.name" type="text" placeholder="Ваше имя" class="form-input" />
           <p x-show="$store.app.formErrors.name" x-text="$store.app.formErrors.name" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <div>
-          <input x-model="$store.app.form.phone" type="tel" placeholder="Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½" class="form-input" />
+          <input x-model="$store.app.form.phone" type="tel" placeholder="Телефон" class="form-input" />
           <p x-show="$store.app.formErrors.phone" x-text="$store.app.formErrors.phone" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <div>
           <div class="relative">
-            <input x-model="$store.app.form.address" type="text" placeholder="ÐÐ´Ñ€ÐµÑ Ð´Ð¾ÑÑ‚Ð°Ð²ÐºÐ¸" class="form-input" style="padding-right:48px" />
+            <input x-model="$store.app.form.address" type="text" placeholder="Адрес доставки" class="form-input" style="padding-right:48px" />
             <button @click="$store.app.getLocation()"
                     class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl flex items-center justify-center" style="background:#27272a">
               <i data-lucide="map-pin" class="w-4 h-4" style="color:#F59E0B"></i>
@@ -321,41 +321,41 @@
           <p x-show="$store.app.formErrors.address" x-text="$store.app.formErrors.address" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <p x-show="$store.app.formErrors.cart" x-text="$store.app.formErrors.cart" class="text-xs text-center" style="color:#f87171"></p>
-        <button @click="$store.app.submitOrder()" class="btn-amber w-full py-4 rounded-2xl text-base mt-1">ÐžÑ„Ð¾Ñ€Ð¼Ð¸Ñ‚ÑŒ Ð·Ð°ÐºÐ°Ð· ðŸš€</button>
+        <button @click="$store.app.submitOrder()" class="btn-amber w-full py-4 rounded-2xl text-base mt-1">Оформить заказ 🚀</button>
       </div>
     </div>
 
-    <!-- â• Ð£Ð¡ÐŸÐ•Ð¥ â• -->
+    <!-- ═ УСПЕХ ═ -->
     <div x-show="$store.app.page==='success'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-350"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          class="flex flex-col items-center text-center pt-16 slide-up px-4">
-      <div class="text-7xl mb-5">ðŸŽ‰</div>
-      <h2 class="font-display text-3xl font-800 mb-2">Ð—Ð°ÐºÐ°Ð· Ð¿Ñ€Ð¸Ð½ÑÑ‚!</h2>
-      <p class="text-sm mb-8 max-w-xs" style="color:var(--z400)">Ð£Ð¶Ðµ Ð³Ð¾Ñ‚Ð¾Ð²Ð¸Ð¼. ÐšÑƒÑ€ÑŒÐµÑ€ Ð²Ñ‹ÐµÐ´ÐµÑ‚ Ñ‡ÐµÑ€ÐµÐ· Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð¼Ð¸Ð½ÑƒÑ‚!</p>
+      <div class="text-7xl mb-5">🎉</div>
+      <h2 class="font-display text-3xl font-800 mb-2">Заказ принят!</h2>
+      <p class="text-sm mb-8 max-w-xs" style="color:var(--z400)">Уже готовим. Курьер выедет через несколько минут!</p>
       <div class="w-full rounded-2xl p-5 mb-5 text-left" style="background:#18181b;border:1px solid #27272a">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F59E0B22">
             <i data-lucide="chef-hat" class="w-5 h-5" style="color:#F59E0B"></i>
           </div>
           <div>
-            <p class="font-semibold text-sm">Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð°</p>
+            <p class="font-semibold text-sm">Статус заказа</p>
             <div class="flex items-center gap-2 mt-0.5">
               <div class="dot-live"></div>
-              <p class="text-xs" style="color:#10b981">Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ Ð½Ð° ÐºÑƒÑ…Ð½Ðµ</p>
+              <p class="text-xs" style="color:#10b981">Готовится на кухне</p>
             </div>
           </div>
         </div>
       </div>
       <button @click="$store.app.page='tracking';$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250)"
-              class="btn-amber w-full py-4 rounded-2xl text-base mb-3">ðŸ—º Ð¡Ð»ÐµÐ´Ð¸Ñ‚ÑŒ Ð·Ð° ÐºÑƒÑ€ÑŒÐµÑ€Ð¾Ð¼</button>
+              class="btn-amber w-full py-4 rounded-2xl text-base mb-3">🗺 Следить за курьером</button>
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="w-full py-3 rounded-2xl text-sm font-semibold transition"
-              style="background:#27272a;color:#a1a1aa">Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒÑÑ Ð² Ð¼ÐµÐ½ÑŽ</button>
+              style="background:#27272a;color:#a1a1aa">Вернуться в меню</button>
     </div>
 
-    <!-- â• Ð¢Ð Ð•ÐšÐ˜ÐÐ“ â• -->
+    <!-- ═ ТРЕКИНГ ═ -->
     <div x-show="$store.app.page==='tracking'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -363,35 +363,35 @@
          class="pt-6 px-4">
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-5 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
       </button>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display text-2xl font-700">Ð¢Ñ€ÐµÐºÐ¸Ð½Ð³</h2>
+        <h2 class="font-display text-2xl font-700">Трекинг</h2>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background:#10b98122">
           <div class="dot-live"></div>
-          <span class="text-xs font-semibold" style="color:#10b981">Ð’ Ð¿ÑƒÑ‚Ð¸</span>
+          <span class="text-xs font-semibold" style="color:#10b981">В пути</span>
         </div>
       </div>
       <div id="tracking-map" class="w-full mb-5"></div>
       <div x-show="$store.app.trackingOrder" class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
         <div class="flex items-center justify-between mb-3">
-          <span class="font-display font-700 text-sm">Ð¡Ð¾ÑÑ‚Ð°Ð² Ð·Ð°ÐºÐ°Ð·Ð°</span>
+          <span class="font-display font-700 text-sm">Состав заказа</span>
           <span class="text-xs" style="color:var(--z400)" x-text="'#'+String($store.app.trackingOrder?.id||'').slice(-4)"></span>
         </div>
         <template x-for="item in ($store.app.trackingOrder?.items||[])" :key="item.id">
           <div class="flex justify-between py-1.5 border-b last:border-0 text-sm" style="border-color:#27272a">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
-            <span style="color:var(--z400)">Ã—<span x-text="item.qty"></span></span>
+            <span style="color:var(--z400)">×<span x-text="item.qty"></span></span>
           </div>
         </template>
         <div class="flex justify-between pt-3">
-          <span class="font-display font-700 text-sm">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
+          <span class="font-display font-700 text-sm">Итого</span>
           <span class="font-display font-700 text-sm" style="color:#F59E0B" x-text="'$'+($store.app.trackingOrder?.total||0).toFixed(2)"></span>
         </div>
       </div>
     </div>
 
-    <!-- â• ÐŸÐ ÐžÐ¤Ð˜Ð›Ð¬ ÐŸÐžÐ›Ð¬Ð—ÐžÐ’ÐÐ¢Ð•Ð›Ð¯ â• -->
+    <!-- ═ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ═ -->
     <div x-show="$store.app.page==='user_profile'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -400,51 +400,51 @@
 
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-6 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
       </button>
 
-      <!-- ÐÐ²Ð°Ñ‚Ð°Ñ€ + Ð¸Ð¼Ñ -->
+      <!-- Аватар + имя -->
       <div class="flex flex-col items-center mb-7">
         <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-3 text-3xl"
              style="background:linear-gradient(135deg,#F59E0B,#D97706)">
-          ðŸ‘¤
+          👤
         </div>
         <h2 class="font-display text-2xl font-700" x-text="$store.app.currentUser?.name"></h2>
         <p class="text-sm mt-1" style="color:var(--z400)" x-text="$store.app.currentUser?.email"></p>
         <p class="text-sm" style="color:var(--z400)" x-text="$store.app.currentUser?.phone"></p>
-        <!-- Ð‘ÐµÐ¹Ð´Ð¶ Ñ€Ð¾Ð»Ð¸ -->
+        <!-- Бейдж роли -->
         <span class="mt-2 px-3 py-1 rounded-full text-xs font-semibold" style="background:rgba(245,158,11,.15);color:#F59E0B">
-          ðŸ› ÐŸÐ¾ÐºÑƒÐ¿Ð°Ñ‚ÐµÐ»ÑŒ
+          🛍 Покупатель
         </span>
       </div>
 
-      <!-- Ð¡Ñ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ° -->
+      <!-- Статистика -->
       <div class="grid grid-cols-2 gap-3 mb-6">
         <div class="profile-stat">
           <p class="text-2xl font-display font-700" style="color:#F59E0B"
              x-text="$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).length"></p>
-          <p class="text-xs mt-1" style="color:var(--z400)">Ð—Ð°ÐºÐ°Ð·Ð¾Ð²</p>
+          <p class="text-xs mt-1" style="color:var(--z400)">Заказов</p>
         </div>
         <div class="profile-stat">
           <p class="text-2xl font-display font-700" style="color:#F59E0B"
              x-text="'$'+$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).reduce((s,o)=>s+o.total,0).toFixed(2)"></p>
-          <p class="text-xs mt-1" style="color:var(--z400)">ÐŸÐ¾Ñ‚Ñ€Ð°Ñ‡ÐµÐ½Ð¾</p>
+          <p class="text-xs mt-1" style="color:var(--z400)">Потрачено</p>
         </div>
       </div>
 
-      <!-- Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ Ð·Ð°ÐºÐ°Ð·Ð¾Ð² Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ -->
+      <!-- История заказов пользователя -->
       <div class="rounded-2xl overflow-hidden mb-5" style="background:var(--z900);border:1px solid var(--z700)">
         <div class="p-4 border-b" style="border-color:var(--z700)">
-          <h3 class="font-display font-700 text-sm">ðŸ“¦ ÐœÐ¾Ð¸ Ð·Ð°ÐºÐ°Ð·Ñ‹</h3>
+          <h3 class="font-display font-700 text-sm">📦 Мои заказы</h3>
         </div>
         <div x-show="!$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).length"
              class="p-5 text-sm text-center" style="color:var(--z400)">
-          Ð—Ð°ÐºÐ°Ð·Ð¾Ð² Ð¿Ð¾ÐºÐ° Ð½ÐµÑ‚ ðŸ½
+          Заказов пока нет 🍽
         </div>
         <template x-for="order in $store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email)" :key="order.id">
           <div class="p-4 border-b last:border-0" style="border-color:var(--z700)">
             <div class="flex items-center justify-between mb-2">
-              <span class="font-semibold text-sm" x-text="'Ð—Ð°ÐºÐ°Ð· #'+String(order.id).slice(-4)"></span>
+              <span class="font-semibold text-sm" x-text="'Заказ #'+String(order.id).slice(-4)"></span>
               <span class="font-display font-700 text-sm" style="color:#F59E0B" x-text="'$'+order.total.toFixed(2)"></span>
             </div>
             <div class="flex flex-wrap gap-1 mb-2">
@@ -458,23 +458,23 @@
               <span class="text-xs" style="color:var(--z400)" x-text="new Date(order.createdAt).toLocaleDateString('ru')"></span>
               <span class="status-badge"
                     :class="{'s-new':order.status==='new','s-cooking':order.status==='cooking','s-delivery':order.status==='delivery','s-done':order.status==='done'}"
-                    x-text="({new:'ðŸ†• ÐÐ¾Ð²Ñ‹Ð¹',cooking:'ðŸ³ Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ',delivery:'ðŸ›µ Ð’ Ð¿ÑƒÑ‚Ð¸',done:'âœ… Ð”Ð¾ÑÑ‚Ð°Ð²Ð»ÐµÐ½'})[order.status]||order.status">
+                    x-text="({new:'🆕 Новый',cooking:'🍳 Готовится',delivery:'🛵 В пути',done:'✅ Доставлен'})[order.status]||order.status">
               </span>
             </div>
           </div>
         </template>
       </div>
 
-      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ð²Ñ‹Ð¹Ñ‚Ð¸ -->
+      <!-- Кнопка выйти -->
       <button @click="$store.app.logout()"
               class="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition"
               style="background:#27272a;color:#f87171;border:1px solid #3f3f46">
         <i data-lucide="log-out" class="w-4 h-4"></i>
-        Ð’Ñ‹Ð¹Ñ‚Ð¸ Ð¸Ð· Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ð°
+        Выйти из аккаунта
       </button>
     </div>
 
-    <!-- â• ÐÐ”ÐœÐ˜ÐÐ˜Ð¡Ð¢Ð ÐÐ¢ÐžÐ  â• -->
+    <!-- ═ АДМИНИСТРАТОР ═ -->
     <div x-show="$store.app.showAdmin&&$store.app.role==='admin'"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -482,13 +482,13 @@
          class="pt-6 px-4">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="font-display text-2xl font-700">ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€</h2>
-          <p class="text-xs mt-0.5" style="color:#F59E0B">ðŸ‘‘ ÐŸÐ°Ð½ÐµÐ»ÑŒ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ</p>
+          <h2 class="font-display text-2xl font-700">Администратор</h2>
+          <p class="text-xs mt-0.5" style="color:#F59E0B">👑 Панель управления</p>
         </div>
         <div class="flex gap-2">
           <button @click="$store.app.logout()"
                   class="w-8 h-8 rounded-xl flex items-center justify-center transition" style="background:#27272a;color:#f87171"
-                  title="Ð’Ñ‹Ð¹Ñ‚Ð¸">
+                  title="Выйти">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
           <button @click="$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons())"
@@ -499,17 +499,17 @@
       </div>
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
-          <p class="text-xs mb-1" style="color:var(--z400)">ðŸ’° Ð’Ñ‹Ñ€ÑƒÑ‡ÐºÐ°</p>
+          <p class="text-xs mb-1" style="color:var(--z400)">💰 Выручка</p>
           <p class="font-display text-2xl font-700" style="color:#F59E0B" x-text="'$'+$store.app.totalRevenue"></p>
         </div>
         <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
-          <p class="text-xs mb-1" style="color:var(--z400)">ðŸ“¦ Ð—Ð°ÐºÐ°Ð·Ð¾Ð²</p>
+          <p class="text-xs mb-1" style="color:var(--z400)">📦 Заказов</p>
           <p class="font-display text-2xl font-700" x-text="$store.app.orders.length"></p>
         </div>
       </div>
       <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
-        <h3 class="font-display font-700 text-sm mb-3" style="color:#F59E0B">ðŸ† Ð¢Ð¾Ð¿ Ð¿Ñ€Ð¾Ð´Ð°Ð¶</h3>
-        <div x-show="!$store.app.topSellers.length" class="text-sm" style="color:var(--z400)">ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…</div>
+        <h3 class="font-display font-700 text-sm mb-3" style="color:#F59E0B">🏆 Топ продаж</h3>
+        <div x-show="!$store.app.topSellers.length" class="text-sm" style="color:var(--z400)">Нет данных</div>
         <template x-for="([name,qty],i) in $store.app.topSellers" :key="name">
           <div class="flex items-center justify-between py-2 border-b last:border-0" style="border-color:#27272a">
             <div class="flex items-center gap-2">
@@ -518,26 +518,26 @@
                     x-text="i+1"></span>
               <span class="text-sm" x-text="name"></span>
             </div>
-            <span class="text-xs" style="color:var(--z400)" x-text="qty+' ÑˆÑ‚.'"></span>
+            <span class="text-xs" style="color:var(--z400)" x-text="qty+' шт.'"></span>
           </div>
         </template>
       </div>
       <div class="rounded-2xl overflow-hidden" style="background:#18181b;border:1px solid #27272a">
         <div class="p-4 border-b flex items-center justify-between" style="border-color:#27272a">
-          <h3 class="font-display font-700 text-sm">Ð’ÑÐµ Ð·Ð°ÐºÐ°Ð·Ñ‹</h3>
+          <h3 class="font-display font-700 text-sm">Все заказы</h3>
           <button x-show="$store.app.orders.length"
-                  @click="if(confirm('ÐžÑ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð·Ð°ÐºÐ°Ð·Ñ‹?')){$store.app.orders=[];localStorage.removeItem('qb_orders');}"
-                  class="text-xs hover:text-red-400 transition" style="color:var(--z400)">ÐžÑ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ</button>
+                  @click="if(confirm('Очистить все заказы?')){$store.app.orders=[];localStorage.removeItem('qb_orders');}"
+                  class="text-xs hover:text-red-400 transition" style="color:var(--z400)">Очистить</button>
         </div>
-        <div x-show="!$store.app.orders.length" class="p-5 text-sm text-center" style="color:var(--z400)">ÐÐµÑ‚ Ð·Ð°ÐºÐ°Ð·Ð¾Ð²</div>
+        <div x-show="!$store.app.orders.length" class="p-5 text-sm text-center" style="color:var(--z400)">Нет заказов</div>
         <div class="overflow-x-auto" x-show="$store.app.orders.length">
           <table class="w-full text-sm admin-table">
             <thead>
               <tr style="border-bottom:1px solid #27272a">
                 <th class="p-3 text-left">ID</th>
-                <th class="p-3 text-left">ÐšÐ»Ð¸ÐµÐ½Ñ‚</th>
-                <th class="p-3 text-left">Ð¡ÑƒÐ¼Ð¼Ð°</th>
-                <th class="p-3 text-left">Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</th>
+                <th class="p-3 text-left">Клиент</th>
+                <th class="p-3 text-left">Сумма</th>
+                <th class="p-3 text-left">Статус</th>
               </tr>
             </thead>
             <tbody>
@@ -552,7 +552,7 @@
                   <td class="p-3">
                     <span class="status-badge"
                           :class="{'s-new':order.status==='new','s-cooking':order.status==='cooking','s-delivery':order.status==='delivery','s-done':order.status==='done'}"
-                          x-text="({new:'ðŸ†• ÐÐ¾Ð²Ñ‹Ð¹',cooking:'ðŸ³ Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ',delivery:'ðŸ›µ Ð’ Ð¿ÑƒÑ‚Ð¸',done:'âœ… Ð”Ð¾ÑÑ‚Ð°Ð²Ð»ÐµÐ½'})[order.status]||order.status">
+                          x-text="({new:'🆕 Новый',cooking:'🍳 Готовится',delivery:'🛵 В пути',done:'✅ Доставлен'})[order.status]||order.status">
                     </span>
                   </td>
                 </tr>
@@ -572,12 +572,12 @@
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='menu'&&!$store.app.showAdmin?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="utensils" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">ÐœÐµÐ½ÑŽ</span>
+      <span class="text-xs font-semibold">Меню</span>
     </button>
     <button @click="$store.app.showCart=true;$nextTick(()=>lucide.createIcons())"
             class="flex flex-col items-center gap-1 relative transition" style="color:#52525b">
       <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð°</span>
+      <span class="text-xs font-semibold">Корзина</span>
       <span x-show="$store.app.cartCount>0" x-text="$store.app.cartCount"
             class="absolute -top-1 right-0 w-4 h-4 rounded-full text-xs font-bold flex items-center justify-center"
             style="background:#F59E0B;color:#000"></span>
@@ -586,13 +586,13 @@
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='checkout'?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="receipt-text" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">Ð—Ð°ÐºÐ°Ð·</span>
+      <span class="text-xs font-semibold">Заказ</span>
     </button>
-    <button @click="if($store.app.trackingOrder){$store.app.page='tracking';$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250);}else{$store.app.showToast('Ð¡Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÐ´ÐµÐ»Ð°Ð¹ Ð·Ð°ÐºÐ°Ð· ðŸ˜Š');}"
+    <button @click="if($store.app.trackingOrder){$store.app.page='tracking';$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250);}else{$store.app.showToast('Сначала сделай заказ 😊');}"
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='tracking'?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="map" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">ÐšÐ°Ñ€Ñ‚Ð°</span>
+      <span class="text-xs font-semibold">Карта</span>
     </button>
   </nav>
 
@@ -619,28 +619,28 @@
       </div>
       <div class="px-5 pb-8">
         <div class="flex items-center justify-between py-4">
-          <h3 class="font-display text-xl font-700">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð°</h3>
+          <h3 class="font-display text-xl font-700">Корзина</h3>
           <button @click="$store.app.showCart=false" class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:#27272a">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
         <div x-show="!$store.app.cart.length" class="text-center py-14">
-          <div class="text-5xl mb-3">ðŸ›’</div>
-          <p class="text-sm" style="color:var(--z400)">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð° Ð¿ÑƒÑÑ‚Ð°</p>
+          <div class="text-5xl mb-3">🛒</div>
+          <p class="text-sm" style="color:var(--z400)">Корзина пуста</p>
         </div>
         <template x-for="item in $store.app.cart" :key="item.id">
           <div class="flex items-center gap-3 py-3 border-b" style="border-color:#27272a">
             <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style="background:#27272a">
               <img :src="item.img" :alt="item.name" style="width:100%;height:100%;object-fit:cover"
                    :data-emoji="item.emoji"
-                   onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.5rem;display:flex;align-items:center;justify-content:center;height:100%\'>' + (this.dataset.emoji || 'ðŸ½') + '</span>'" />
+                   onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.5rem;display:flex;align-items:center;justify-content:center;height:100%\'>' + (this.dataset.emoji || '🍽') + '</span>'" />
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm truncate" x-text="item.name"></p>
               <p class="text-xs" style="color:#F59E0B" x-text="'$'+item.price.toFixed(2)"></p>
             </div>
             <div class="flex items-center gap-2">
-              <button @click="$store.app.changeQty(item.id,-1)" class="qty-btn minus">âˆ’</button>
+              <button @click="$store.app.changeQty(item.id,-1)" class="qty-btn minus">−</button>
               <span class="font-bold text-sm w-5 text-center" x-text="item.qty"></span>
               <button @click="$store.app.changeQty(item.id,+1)" class="qty-btn plus">+</button>
             </div>
@@ -648,11 +648,11 @@
         </template>
         <div x-show="$store.app.cart.length" class="pt-4">
           <div class="flex justify-between items-center mb-4">
-            <span class="text-sm" style="color:var(--z400)">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
+            <span class="text-sm" style="color:var(--z400)">Итого</span>
             <span class="font-display text-xl font-700" style="color:#F59E0B" x-text="'$'+$store.app.cartTotal"></span>
           </div>
           <button @click="$store.app.showCart=false;$store.app.page='checkout';$nextTick(()=>lucide.createIcons())"
-                  class="btn-amber w-full py-4 rounded-2xl text-base">ÐžÑ„Ð¾Ñ€Ð¼Ð¸Ñ‚ÑŒ â†’</button>
+                  class="btn-amber w-full py-4 rounded-2xl text-base">Оформить →</button>
         </div>
       </div>
     </div>
@@ -662,5 +662,6 @@
   <script src="assets/js/app.js"></script>
 </body>
 </html>
+
 
 
