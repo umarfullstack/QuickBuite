@@ -1,9 +1,41 @@
 ﻿module.exports = async function handler(req, res) {
+  const botToken = (process.env.TG_BOT_TOKEN || '').trim();
+  const chatId = (process.env.TG_CHAT_ID || '').trim();
+
+  async function sendTelegram(text) {
+    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text })
+    });
+    const tgData = await tgRes.json().catch(() => ({}));
+    return { tgRes, tgData };
+  }
+
   if (req.method === 'GET') {
+    if (req.query && req.query.send_test === '1') {
+      if (!botToken || !chatId) {
+        return res.status(500).json({
+          ok: false,
+          error: 'TG_BOT_TOKEN or TG_CHAT_ID is not configured on server'
+        });
+      }
+
+      try {
+        const { tgRes, tgData } = await sendTelegram('✅ QuickBite direct server test');
+        if (!tgRes.ok || tgData.ok === false) {
+          return res.status(500).json({ ok: false, telegram: tgData });
+        }
+        return res.status(200).json({ ok: true, direct_test: true, telegram: tgData });
+      } catch (error) {
+        return res.status(500).json({ ok: false, error: 'direct_test_send_failed' });
+      }
+    }
+
     return res.status(200).json({
       ok: true,
       service: 'order-notify',
-      configured: Boolean(process.env.TG_BOT_TOKEN && process.env.TG_CHAT_ID),
+      configured: Boolean(botToken && chatId),
       route: '/api/order-notify'
     });
   }
@@ -11,9 +43,6 @@
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
   }
-
-  const botToken = (process.env.TG_BOT_TOKEN || '').trim();
-  const chatId = (process.env.TG_CHAT_ID || '').trim();
 
   if (!botToken || !chatId) {
     return res.status(500).json({
@@ -55,16 +84,7 @@
   }
 
   try {
-    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text
-      })
-    });
-
-    const tgData = await tgRes.json().catch(() => ({}));
+    const { tgRes, tgData } = await sendTelegram(text);
     if (!tgRes.ok || tgData.ok === false) {
       return res.status(500).json({ ok: false, telegram: tgData });
     }
