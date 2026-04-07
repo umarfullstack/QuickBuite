@@ -3,7 +3,8 @@
     return res.status(200).json({
       ok: true,
       service: 'telegram-webhook',
-      configured: Boolean(process.env.TG_BOT_TOKEN)
+      configured: Boolean(process.env.TG_BOT_TOKEN),
+      route: '/api/telegram-webhook'
     });
   }
 
@@ -17,23 +18,22 @@
   }
 
   const update = req.body || {};
-  const message = update.message;
-
-  // Always acknowledge Telegram quickly.
-  res.status(200).json({ ok: true });
+  const message = update.message || update.edited_message;
 
   if (!message || !message.chat || typeof message.text !== 'string') {
-    return;
+    return res.status(200).json({ ok: true, ignored: true, reason: 'No text message' });
   }
 
   const text = message.text.trim();
-  if (!text.startsWith('/start')) {
-    return;
+  const isStartCommand = /^\/start(?:@\w+)?(?:\s|$)/i.test(text);
+
+  if (!isStartCommand) {
+    return res.status(200).json({ ok: true, ignored: true, reason: 'Not /start command' });
   }
 
   const chatId = message.chat.id;
   const user = message.from || {};
-  const displayName = user.username || user.first_name || 'друг';
+  const displayName = user.username || user.first_name || user.last_name || 'друг';
 
   const greeting = [
     `Привет, ${displayName}!`,
@@ -42,7 +42,7 @@
   ].join('\n');
 
   try {
-    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -50,7 +50,16 @@
         text: greeting
       })
     });
+
+    const tgData = await tgRes.json().catch(() => ({}));
+    if (!tgRes.ok || tgData.ok === false) {
+      console.error('Telegram sendMessage failed:', tgData);
+      return res.status(200).json({ ok: false, telegram: tgData });
+    }
+
+    return res.status(200).json({ ok: true, replied: true });
   } catch (error) {
     console.error('Failed to send /start greeting:', error);
+    return res.status(200).json({ ok: false, error: 'Send failed' });
   }
 };
