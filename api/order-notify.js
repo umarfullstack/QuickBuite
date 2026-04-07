@@ -41,7 +41,7 @@
         }
         return res.status(200).json({ ok: true, direct_test: true, telegram: tgData });
       } catch (error) {
-        return res.status(500).json({ ok: false, error: 'direct_test_send_failed' });
+        return res.status(500).json({ ok: false, error: 'direct_test_send_failed', details: String(error && error.message ? error.message : error) });
       }
     }
 
@@ -105,6 +105,6 @@
     return res.status(200).json({ ok: true, type });
   } catch (error) {
     console.error('order-notify send failed:', error);
-    return res.status(500).json({ ok: false, error: 'send_failed' });
+    return res.status(500).json({ ok: false, error: 'send_failed', details: String(error && error.message ? error.message : error) });
   }
 };

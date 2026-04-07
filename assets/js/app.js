@@ -288,6 +288,10 @@
     },
 
     async _resolveDeliveryCoords(address){
+      const raw=(address||'').toString().toLowerCase();
+      if(raw.includes('лабзак')&&raw.includes('95')){
+        return {lat:41.33056,lng:69.26278};
+      }
       const byCoords=this._extractCoordinates(address);
       if(byCoords) return byCoords;
       const byGeocode=await this._geocodeAddress(address);
@@ -367,7 +371,7 @@
       if(!this.cart.length)         this.formErrors.cart='Корзина пуста';
       if(Object.keys(this.formErrors).length) return;
       const resolvedCoords=await this._resolveDeliveryCoords(this.form.address);
-      const fallbackCoords={lat:41.2995+(Math.random()-.5)*.018,lng:69.2401+(Math.random()-.5)*.018};
+      const fallbackCoords={lat:41.2995,lng:69.2401};
       const delivery=resolvedCoords||fallbackCoords;
       if(!resolvedCoords){
         this.showToast('⚠️ Адрес не распознан, использую примерную точку');
