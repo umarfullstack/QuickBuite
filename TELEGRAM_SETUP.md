@@ -1,22 +1,33 @@
-﻿# Telegram /start Setup
+﻿# Telegram Setup (Vercel)
 
-1. In Vercel Project Settings -> Environment Variables add:
-- `TG_BOT_TOKEN` = your bot token from BotFather.
+Use these server env vars in Vercel -> Project Settings -> Environment Variables:
 
-2. Redeploy project.
+- `TG_BOT_TOKEN` = token from @BotFather
+- `TG_CHAT_ID` = your chat id (for order notifications), example: `6006811538`
 
-3. Set webhook (replace values):
+## 1) /start greeting (webhook)
+
+After each deploy, set webhook:
+
 `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://<YOUR_VERCEL_DOMAIN>/api/telegram-webhook&drop_pending_updates=true`
 
-4. Check status:
+Check status:
+
 `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo`
 
-## Important
+Expected: no last_error_message, correct webhook URL.
 
-- Mini App launch and `/start` are different flows.
-- `/start` reply appears only when webhook is configured correctly.
-- Mini App data is received only if the app calls `Telegram.WebApp.sendData(...)`.
+## 2) Order notifications from all clients
 
-Now webhook handles both:
-- `/start` -> greeting `Привет, <username>!`
-- `web_app_data` -> confirmation message.
+Frontend sends order to server endpoint:
+
+`POST /api/order-notify`
+
+Server sends Telegram message using env vars above.
+
+This means notifications work for EVERY customer, not only for your browser.
+
+## Diagnostics endpoints
+
+- `GET /api/telegram-webhook` -> webhook health
+- `GET /api/order-notify` -> notification service health

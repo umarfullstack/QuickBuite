@@ -1,0 +1,14 @@
+﻿# Ignore local/editor/system artifacts
+.vscode/
+.idea/
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Vercel local state
+.vercel/
+
+# Node ecosystem
+node_modules/

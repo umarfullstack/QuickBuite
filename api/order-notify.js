@@ -1,0 +1,77 @@
+﻿module.exports = async function handler(req, res) {
+  if (req.method === 'GET') {
+    return res.status(200).json({
+      ok: true,
+      service: 'order-notify',
+      configured: Boolean(process.env.TG_BOT_TOKEN && process.env.TG_CHAT_ID),
+      route: '/api/order-notify'
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
+  }
+
+  const botToken = process.env.TG_BOT_TOKEN;
+  const chatId = process.env.TG_CHAT_ID;
+
+  if (!botToken || !chatId) {
+    return res.status(500).json({
+      ok: false,
+      error: 'TG_BOT_TOKEN or TG_CHAT_ID is not configured on server'
+    });
+  }
+
+  const body = req.body || {};
+  const type = body.type || 'order';
+
+  let text = 'QuickBite notification';
+
+  if (type === 'test') {
+    text = [
+      '✅ QuickBite test',
+      'Telegram server notifications are working.'
+    ].join('\n');
+  } else {
+    const order = body.order || {};
+    const customer = order.customer || {};
+    const items = Array.isArray(order.items) ? order.items : [];
+
+    const lines = items
+      .map((i) => `• ${i.emoji || ''} ${i.name || 'Item'} x${i.qty || 1} = $${Number((i.price || 0) * (i.qty || 1)).toFixed(2)}`)
+      .join('\n');
+
+    text = [
+      `🛎 Новый заказ #${String(order.id || '').slice(-4)}`,
+      `👤 ${customer.name || '-'} | 📞 ${customer.phone || '-'}`,
+      `📍 ${customer.address || '-'}`,
+      '',
+      'Состав:',
+      lines || '- нет позиций -',
+      '',
+      `💰 Итого: $${Number(order.total || 0).toFixed(2)}`,
+      `🕐 ${order.createdAt ? new Date(order.createdAt).toLocaleString('ru-RU') : ''}`
+    ].join('\n');
+  }
+
+  try {
+    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text
+      })
+    });
+
+    const tgData = await tgRes.json().catch(() => ({}));
+    if (!tgRes.ok || tgData.ok === false) {
+      return res.status(500).json({ ok: false, telegram: tgData });
+    }
+
+    return res.status(200).json({ ok: true, type });
+  } catch (error) {
+    console.error('order-notify send failed:', error);
+    return res.status(500).json({ ok: false, error: 'send_failed' });
+  }
+};

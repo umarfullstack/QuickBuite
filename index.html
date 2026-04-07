@@ -1,467 +1,21 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru" x-data x-init="$store.app.init()">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuickBite — доставка еды</title>
+  <title>QuickBite â€” Ð´Ð¾ÑÑ‚Ð°Ð²ÐºÐ° ÐµÐ´Ñ‹</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --amber:#F59E0B; --amber-dark:#D97706;
-      --z950:#09090B; --z900:#18181B; --z800:#27272A; --z700:#3F3F46; --z400:#A1A1AA;
-    }
-    *{box-sizing:border-box}
-    body{font-family:'DM Sans',sans-serif;background:var(--z950);color:#fff;min-height:100vh;overflow-x:hidden}
-    h1,h2,h3,.font-display{font-family:'Syne',sans-serif}
-    ::-webkit-scrollbar{width:4px;height:4px}
-    ::-webkit-scrollbar-track{background:var(--z900)}
-    ::-webkit-scrollbar-thumb{background:var(--z700);border-radius:99px}
-
-    /* ══ CARD — плавный hover через CSS ══ */
-    .food-card{
-      display:flex;flex-direction:column;
-      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1),
-      box-shadow 0.45s cubic-bezier(0.22,1,0.36,1);
-      cursor:pointer;
-      will-change:transform;
-    }
-
-    .food-card .card-img-wrap img {
-      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
-    }
-    .food-card:hover .card-img-wrap img {
-      transform: scale(1.06);
-    }
-
-    .card-body{flex:1;display:flex;flex-direction:column;padding:12px}
-    .card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;line-height:1.3;margin-bottom:4px;color:inherit}
-    .card-desc{
-      font-size:11px;color:var(--z400);line-height:1.45;
-      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-      min-height:2.9em;flex:1
-    }
-    .card-footer{margin-top:10px;display:flex;align-items:center;justify-content:space-between}
-
-    .btn-amber{background:var(--amber);color:#000;font-family:'Syne',sans-serif;font-weight:700;transition:background .2s,box-shadow .2s,transform .15s}
-    .btn-amber:hover{background:var(--amber-dark);box-shadow:0 0 28px rgba(245,158,11,.45);transform:scale(1.02)}
-    .btn-amber:active{transform:scale(.98)}
-
-    .cat-pill.active{background:var(--amber)!important;color:#000!important;border-color:var(--amber)!important}
-
-    body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.35;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E")}
-    .hero-grad{background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(245,158,11,.2) 0%,transparent 70%)}
-
-    @keyframes pulse-badge{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-    .badge-pulse{animation:pulse-badge 1.5s ease-in-out infinite}
-    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .slide-up{animation:slideUp .4s ease forwards}
-    @keyframes dot-pulse{0%,100%{opacity:1}50%{opacity:.3}}
-    .dot-live{width:7px;height:7px;border-radius:50%;background:#10b981;animation:dot-pulse 1.4s ease infinite;flex-shrink:0}
-
-    .form-input{background:var(--z800);border:1.5px solid var(--z700);color:#fff;border-radius:14px;padding:12px 16px;width:100%;font-family:'DM Sans',sans-serif;font-size:15px;transition:border-color .2s;outline:none}
-    .form-input:focus{border-color:var(--amber)}
-    .form-input::placeholder{color:var(--z400)}
-    .cfg-input{background:var(--z800);border:1.5px solid var(--z700);color:#fff;border-radius:10px;padding:8px 12px;width:100%;font-size:13px;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif}
-    .cfg-input:focus{border-color:var(--amber)}
-    .cfg-input::placeholder{color:var(--z400)}
-
-    .admin-table th{font-family:'Syne',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--z400)}
-    .qty-btn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;font-size:16px;font-weight:700;user-select:none;flex-shrink:0}
-    .qty-btn.minus{background:var(--z800);color:#fff}
-    .qty-btn.minus:hover{background:var(--z700)}
-    .qty-btn.plus{background:var(--amber);color:#000}
-    .qty-btn.plus:hover{background:var(--amber-dark)}
-
-    #tracking-map{height:280px;border-radius:18px;border:1px solid var(--z700)}
-    .leaflet-container{background:var(--z900)}
-
-    .status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600}
-    .s-new{background:rgba(245,158,11,.15);color:#F59E0B}
-    .s-cooking{background:rgba(249,115,22,.15);color:#f97316}
-    .s-delivery{background:rgba(16,185,129,.15);color:#10b981}
-    .s-done{background:rgba(99,102,241,.15);color:#818cf8}
-
-    .cats-scroll{scrollbar-width:none}
-    .cats-scroll::-webkit-scrollbar{display:none}
-
-    /* ── Светлая тема ── */
-    body.light{color:#18181b}
-    body.light .food-card{box-shadow:0 2px 16px rgba(0,0,0,0.08)}
-    body.light .form-input{color:#18181b}
-    body.light .form-input::placeholder{color:#71717a}
-    body.light .cfg-input{color:#18181b}
-    body.light .card-name{color:#18181b}
-    body.light header{border-bottom-color:rgba(0,0,0,0.08)!important}
-    body.light nav{border-top-color:rgba(0,0,0,0.08)!important}
-    .toast-notice{
-      background:#1c1c1e;
-      border:1px solid #3f3f46;
-      color:#fff;
-      white-space:nowrap;
-      max-width:88vw;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    body.light .toast-notice{
-      background:#fff;
-      border-color:#d4d4d8;
-      color:#18181b;
-    }
-
-    body,header,nav,.food-card,.form-input,.cfg-input{
-      transition:background-color 0.3s ease,color 0.3s ease,border-color 0.3s ease;
-    }
-
-    /* ── Auth modal ── */
-    .auth-input{background:var(--z800);border:1.5px solid var(--z700);color:#fff;border-radius:14px;padding:12px 16px;width:100%;font-family:'DM Sans',sans-serif;font-size:15px;transition:border-color .2s;outline:none}
-    .auth-input:focus{border-color:var(--amber)}
-    .auth-input::placeholder{color:var(--z400)}
-    .tab-active{color:#fff;border-bottom:2px solid #F59E0B}
-    .tab-inactive{color:var(--z400);border-bottom:2px solid transparent}
-
-    /* Профиль карточка */
-    .profile-stat{background:var(--z900);border:1px solid var(--z700);border-radius:16px;padding:16px;text-align:center}
-  </style>
+    <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-
-<script>
-document.addEventListener('alpine:init', () => {
-  Alpine.store('app', {
-
-    page: 'menu',
-    theme: 'dark',
-    showCart: false,
-    showAdmin: false,
-    showSettings: false,
-
-    /* ── Auth ── */
-    role: 'guest',        // guest | user | admin
-    authPage: 'login',    // login | register | profile
-    showAuth: false,
-    currentUser: null,    // { name, phone, email }
-    loginForm: { email:'', password:'' },
-    loginError: '',
-    regForm: { name:'', phone:'', email:'', password:'' },
-    regError: '',
-    ADMIN_PASS: '12345678',
-    activeCategory: 'Все',
-    toast: { visible:false, msg:'' },
-    _toastTimer: null,
-
-    config: { supabaseUrl:'', supabaseKey:'', tgBotToken:'', tgChatId:'' },
-    form: { name:'', phone:'', address:'' },
-    formErrors: {},
-    trackingOrder: null,
-    _mapInstance: null,
-    _trackInterval: null,
-
-    /* ── Каталог — ОРИГИНАЛЬНЫЕ картинки и товары ── */
-    products: [
-          { id: 1, name: 'Jumbo Burger', price: 6.59, category: 'Бургеры', emoji: '🍔', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop', desc: 'Сочная говяжья котлета, хрустящий салат, томаты, свежий лук, хрустящая булочка' },
-          { id: 2, name: 'Cheeseburger', price: 6.99, category: 'Бургеры', emoji: '🍔', img: 'https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2hlZXNlYnVyZ2VyfGVufDB8fDB8fHww', desc: 'Сочная говяжья котлета, хрустящий салат, томаты, свежий лук, хрустящая булочка, сыр' },
-          { id: 3, name: 'Breaded Chicken', price: 5.99, category: 'Курица', emoji: '🍗', img: 'https://images.unsplash.com/photo-1586793783658-261cddf883ef?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8RnJpZWQlMjBDaGlja2VufGVufDB8fDB8fHww', desc: 'Куриное филе на гриле в панировке' },
-          { id: 4, name: 'Fried Chicken', price: 6.29, category: 'Курица', emoji: '🍗', img: 'https://images.unsplash.com/photo-1638439430466-b2bb7fdc1d67?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8RnJpZWQlMjBDaGlja2VufGVufDB8fDB8fHww', desc: 'Куриное филе на гриле' },
-          { id: 5, name: 'Veggie Wrap', price: 4.49, category: 'Роллы', emoji: '🌯', img: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop', desc: 'Свежие овощи, хумус, авокадо' },
-          { id: 6, name: 'Spicy Tuna Roll', price: 5.20, category: 'Роллы', emoji: '🍣', img: 'https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=400&h=300&fit=crop', desc: 'Тунец, кунжут, острый соус' },
-          { id: 7, name: 'Margherita', price: 8.90, category: 'Пицца', emoji: '🍕', img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop', desc: 'Томатный соус, моцарелла, базилик' },
-          { id: 8, name: 'Pepperoni XXL', price: 10.50, category: 'Пицца', emoji: '🍕', img: 'https://images.unsplash.com/photo-1605478371310-a9f1e96b4ff4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fFBlcHBlcm9uaXxlbnwwfHwwfHx8MA%3D%3D', desc: 'Щедрая пепперони, тройной сыр' },
-          { id: 9, name: 'Caesar Salad', price: 5.30, category: 'Салаты', emoji: '🥗', img: 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400&h=300&fit=crop', desc: 'Романо, крутоны, пармезан' },
-          { id: 10, name: 'Greek Salad', price: 4.80, category: 'Салаты', emoji: '🥙', img: 'https://images.unsplash.com/photo-1659270156961-323ea2afcd0a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fEdyZWVrJTIwc2FsYXR8ZW58MHx8MHx8fDA%3D', desc: 'Огурцы, маслины, фета' },
-          { id: 11, name: 'Lemonade', price: 2.50, category: 'Напитки', emoji: '🍋', img: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=400&h=300&fit=crop', desc: 'Домашний лимонад с мятой' },
-          { id: 12, name: 'Milkshake', price: 3.90, category: 'Напитки', emoji: '🥤', img: 'https://media.istockphoto.com/id/926990564/photo/chocolate-milk-and-whipped-cream.webp?a=1&b=1&s=612x612&w=0&k=20&c=ilJBEWejGCIwCGi3AV7eiVJ3jE9AI18HEj4bllQM-QI=', desc: 'Ваниль, клубника или шоколад' },
-          { id: 13, name: 'Choco Lava', price: 4.20, category: 'Десерты', emoji: '🍫', img: 'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=400&h=300&fit=crop', desc: 'Тёплый брауни с шоколадным центром' },
-          { id: 14, name: 'Tiramisu', price: 4.60, category: 'Десерты', emoji: '🍮', img: 'https://plus.unsplash.com/premium_photo-1695028378225-97fbe39df62a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8VGlyYW1pc3V8ZW58MHx8MHx8fDA%3D', desc: 'Классический итальянский десерт' },
-        ],
-
-    cart: [],
-    orders: [],
-
-    init() {
-      try {
-        const c=localStorage.getItem('qb_cart');   if(c) this.cart=JSON.parse(c);
-        const o=localStorage.getItem('qb_orders'); if(o) this.orders=JSON.parse(o);
-        const g=localStorage.getItem('qb_config'); if(g) this.config={...this.config,...JSON.parse(g)};
-        const t=localStorage.getItem('qb_theme');  if(t) this.theme=t;
-      } catch(e){}
-      this._applyTheme(this.theme);
-      // Восстанавливаем сессию
-      const savedRole=localStorage.getItem('qb_role');
-      const savedUser=localStorage.getItem('qb_user');
-      if(savedRole&&savedUser){
-        this.role=savedRole;
-        this.currentUser=JSON.parse(savedUser);
-      }
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    _applyTheme(t){
-      const r=document.documentElement.style;
-      if(t==='light'){
-        r.setProperty('--z950','#F4F4F5');
-        r.setProperty('--z900','#FFFFFF');
-        r.setProperty('--z800','#E4E4E7');
-        r.setProperty('--z700','#D4D4D8');
-        r.setProperty('--z400','#71717A');
-        document.body.classList.add('light');
-        document.body.style.color='#18181b';
-      } else {
-        r.setProperty('--z950','#09090B');
-        r.setProperty('--z900','#18181B');
-        r.setProperty('--z800','#27272A');
-        r.setProperty('--z700','#3F3F46');
-        r.setProperty('--z400','#A1A1AA');
-        document.body.classList.remove('light');
-        document.body.style.color='#ffffff';
-      }
-    },
-
-    toggleTheme(){
-      this.theme=this.theme==='dark'?'light':'dark';
-      localStorage.setItem('qb_theme',this.theme);
-      this._applyTheme(this.theme);
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    /* ══ AUTH ══ */
-    login(){
-      this.loginError='';
-      const email=this.loginForm.email.trim().toLowerCase();
-      const pass=this.loginForm.password;
-      if(!email||!pass){this.loginError='Заполните все поля';return;}
-
-      // Проверяем пароль админа
-      if(pass===this.ADMIN_PASS){
-        this.role='admin';
-        this.currentUser={name:'Администратор',email,phone:''};
-        localStorage.setItem('qb_role','admin');
-        localStorage.setItem('qb_user',JSON.stringify(this.currentUser));
-        this.showAuth=false;
-        this.loginForm={email:'',password:''};
-        this.showToast('👑 Добро пожаловать, Администратор!');
-        this.$nextTick(()=>lucide.createIcons());
-        return;
-      }
-
-      // Обычный пользователь — ищем в localStorage
-      const users=JSON.parse(localStorage.getItem('qb_users')||'[]');
-      const user=users.find(u=>u.email===email&&u.password===pass);
-      if(!user){this.loginError='Неверный email или пароль';return;}
-      this.role='user';
-      this.currentUser={name:user.name,email:user.email,phone:user.phone};
-      localStorage.setItem('qb_role','user');
-      localStorage.setItem('qb_user',JSON.stringify(this.currentUser));
-      this.showAuth=false;
-      this.loginForm={email:'',password:''};
-      this.showToast(`👋 Привет, ${user.name}!`);
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    register(){
-      this.regError='';
-      const {name,phone,email,password}=this.regForm;
-      if(!name.trim()||!phone.trim()||!email.trim()||!password.trim()){this.regError='Заполните все поля';return;}
-      if(password.length<6){this.regError='Пароль минимум 6 символов';return;}
-      if(password===this.ADMIN_PASS){this.regError='Этот пароль недоступен';return;}
-      const users=JSON.parse(localStorage.getItem('qb_users')||'[]');
-      if(users.find(u=>u.email===email.toLowerCase())){this.regError='Email уже используется';return;}
-      const newUser={name:name.trim(),phone:phone.trim(),email:email.trim().toLowerCase(),password};
-      users.push(newUser);
-      localStorage.setItem('qb_users',JSON.stringify(users));
-      // Авто-логин
-      this.role='user';
-      this.currentUser={name:newUser.name,email:newUser.email,phone:newUser.phone};
-      localStorage.setItem('qb_role','user');
-      localStorage.setItem('qb_user',JSON.stringify(this.currentUser));
-      this.showAuth=false;
-      this.regForm={name:'',phone:'',email:'',password:''};
-      this.showToast(`🎉 Аккаунт создан! Привет, ${newUser.name}!`);
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    logout(){
-      this.role='guest';
-      this.currentUser=null;
-      localStorage.removeItem('qb_role');
-      localStorage.removeItem('qb_user');
-      this.showAdmin=false;
-      this.showAuth=false;
-      this.page='menu';
-      this.showToast('👋 Вы вышли из аккаунта');
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    openAuth(page='login'){
-      this.authPage=page;
-      this.showAuth=true;
-      this.loginError='';
-      this.regError='';
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    _saveCart()  { localStorage.setItem('qb_cart',  JSON.stringify(this.cart)); },
-    _saveConfig(){ localStorage.setItem('qb_config',JSON.stringify(this.config)); },
-
-    showToast(msg,ms=2400){
-      if(this._toastTimer) clearTimeout(this._toastTimer);
-      this.toast={visible:true,msg};
-      this._toastTimer=setTimeout(()=>{this.toast.visible=false;},ms);
-    },
-
-    get categories(){ return ['Все',...new Set(this.products.map(p=>p.category))]; },
-    get filteredProducts(){ return this.activeCategory==='Все'?this.products:this.products.filter(p=>p.category===this.activeCategory); },
-    cartQty(id){ const i=this.cart.find(i=>i.id===id); return i?i.qty:0; },
-    get cartCount(){ return this.cart.reduce((s,i)=>s+i.qty,0); },
-    get cartTotal(){ return this.cart.reduce((s,i)=>s+i.price*i.qty,0).toFixed(2); },
-    get totalRevenue(){ return this.orders.reduce((s,o)=>s+o.total,0).toFixed(2); },
-    get topSellers(){
-      const m={};
-      this.orders.forEach(o=>o.items.forEach(i=>{m[i.name]=(m[i.name]||0)+i.qty;}));
-      return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    },
-
-    addToCart(product){
-      const item=this.cart.find(i=>i.id===product.id);
-      if(item) item.qty++;
-      else this.cart.push({...product,qty:1});
-      this._saveCart();
-      this.showToast(`${product.emoji} ${product.name} добавлен!`);
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    changeQty(id,delta){
-      const item=this.cart.find(i=>i.id===id);
-      if(!item) return;
-      item.qty+=delta;
-      if(item.qty<=0) this.cart=this.cart.filter(i=>i.id!==id);
-      this._saveCart();
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    getLocation(){
-      if(!navigator.geolocation){this.showToast('Геолокация не поддерживается');return;}
-      this.showToast('📍 Определяю местоположение…');
-      navigator.geolocation.getCurrentPosition(
-        pos=>{
-          this.form.address=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
-          this.showToast('✅ Координаты получены!');
-        },
-        ()=>this.showToast('❌ Не удалось получить геолокацию')
-      );
-    },
-
-    async _sendToSupabase(order){
-      if(!this.config.supabaseUrl||!this.config.supabaseKey) return null;
-      try{
-        const res=await fetch(`${this.config.supabaseUrl}/rest/v1/orders`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json','apikey':this.config.supabaseKey,'Authorization':`Bearer ${this.config.supabaseKey}`,'Prefer':'return=representation'},
-          body:JSON.stringify({customer_name:order.customer.name,customer_phone:order.customer.phone,customer_address:order.customer.address,items:order.items,total:order.total,status:'new',created_at:order.createdAt})
-        });
-        if(!res.ok) throw new Error(await res.text());
-        const data=await res.json();
-        console.log('✅ Supabase OK',data);
-        return data[0];
-      }catch(e){ console.error('❌ Supabase:',e); this.showToast('⚠️ Supabase: ошибка сохранения'); return null; }
-    },
-
-    async _tgSend(text){
-      const token=this.config.tgBotToken.trim(), chatId=this.config.tgChatId.trim();
-      if(!token||!chatId) return {ok:false,description:'Токен или Chat ID пустые'};
-      try{
-        const res=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({chat_id:chatId,text,parse_mode:'HTML'})
-        });
-        const d=await res.json();
-        if(d.ok) console.log('✅ Telegram OK');
-        else{ console.error('❌ Telegram:',d.description); this.showToast('❌ TG: '+d.description); }
-        return d;
-      }catch(e){ console.error('❌ TG fetch:',e.message); this.showToast('❌ TG: сетевая ошибка'); return {ok:false}; }
-    },
-
-    async _sendToTelegram(order){
-      if(!this.config.tgBotToken||!this.config.tgChatId) return;
-      const lines=order.items.map(i=>`  • ${i.emoji} ${i.name} ×${i.qty} = $${(i.price*i.qty).toFixed(2)}`).join('\n');
-      const text=[`🛎 <b>Новый заказ #${String(order.id).slice(-4)}</b>`,`👤 ${order.customer.name} | 📞 ${order.customer.phone}`,`📍 ${order.customer.address}`,``,`<b>Состав:</b>`,lines,``,`💰 <b>Итого: $${order.total.toFixed(2)}</b>`,`🕐 ${new Date(order.createdAt).toLocaleString('ru')}`].join('\n');
-      await this._tgSend(text);
-    },
-
-    async testTelegram(){
-      this.showToast('📤 Отправляю тест…');
-      const d=await this._tgSend('✅ <b>QuickBite тест</b>\n\nTelegram подключён! Заказы будут приходить сюда 🎉');
-      if(d&&d.ok) this.showToast('✅ Тест отправлен! Проверь чат.');
-    },
-
-    prefillForm(){
-      if(this.currentUser){
-        if(this.currentUser.name&&!this.form.name) this.form.name=this.currentUser.name;
-        if(this.currentUser.phone&&!this.form.phone) this.form.phone=this.currentUser.phone;
-      }
-    },
-
-    async submitOrder(){
-      this.formErrors={};
-      if(!this.form.name.trim())    this.formErrors.name='Введите имя';
-      if(!this.form.phone.trim())   this.formErrors.phone='Введите телефон';
-      if(!this.form.address.trim()) this.formErrors.address='Введите адрес';
-      if(!this.cart.length)         this.formErrors.cart='Корзина пуста';
-      if(Object.keys(this.formErrors).length) return;
-      const order={id:Date.now(),createdAt:new Date().toISOString(),customer:{...this.form,email:this.currentUser?.email||''},items:[...this.cart],total:parseFloat(this.cartTotal),status:'cooking',deliveryLat:41.2995+(Math.random()-.5)*.018,deliveryLng:69.2401+(Math.random()-.5)*.018};
-      console.log('📦 ORDER JSON:',JSON.stringify(order,null,2));
-      await Promise.all([this._sendToSupabase(order),this._sendToTelegram(order)]);
-      this.orders.unshift(order);
-      localStorage.setItem('qb_orders',JSON.stringify(this.orders));
-      this.cart=[]; this._saveCart();
-      this.form={name:'',phone:'',address:''};
-      this.trackingOrder=order;
-      this.page='success';
-      this.$nextTick(()=>lucide.createIcons());
-    },
-
-    initMap(){
-      if(this._trackInterval) clearInterval(this._trackInterval);
-      if(this._mapInstance){this._mapInstance.remove();this._mapInstance=null;}
-      const order=this.trackingOrder;
-      if(!order) return;
-      const dLat=order.deliveryLat, dLng=order.deliveryLng;
-      let cLat=dLat-.014, cLng=dLng-.010;
-      setTimeout(()=>{
-        const el=document.getElementById('tracking-map');
-        if(!el) return;
-        const map=L.map(el,{zoomControl:false,attributionControl:false}).setView([dLat,dLng],14);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-        const mkDest=L.divIcon({html:`<div style="background:#F59E0B;width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 16px rgba(245,158,11,.6);display:flex;align-items:center;justify-content:center;"><span style="transform:rotate(45deg);font-size:15px">🏠</span></div>`,className:'',iconAnchor:[18,36]});
-        const mkCourier=L.divIcon({html:`<div style="background:#10b981;width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 16px rgba(16,185,129,.6);display:flex;align-items:center;justify-content:center;font-size:18px">🛵</div>`,className:'',iconAnchor:[20,20]});
-        L.marker([dLat,dLng],{icon:mkDest}).addTo(map).bindPopup('<b>Адрес доставки</b>').openPopup();
-        const cm=L.marker([cLat,cLng],{icon:mkCourier}).addTo(map);
-        this._mapInstance=map;
-        setTimeout(()=>map.invalidateSize(),100);
-        this._trackInterval=setInterval(()=>{
-          cLat+=(dLat-cLat)*.08; cLng+=(dLng-cLng)*.08;
-          cm.setLatLng([cLat,cLng]);
-          map.panTo([cLat,cLng],{animate:true,duration:.8});
-          if(Math.abs(dLat-cLat)<.0002&&Math.abs(dLng-cLng)<.0002){
-            clearInterval(this._trackInterval);
-            this.showToast('🎉 Курьер прибыл!');
-            if(this.trackingOrder) this.trackingOrder.status='done';
-          }
-        },1800);
-      },200);
-    },
-  });
-});
-</script>
-
 <div x-data class="min-h-screen hero-grad">
 
-  <!-- ░░ AUTH MODAL ░░ -->
+  <!-- â–‘â–‘ AUTH MODAL â–‘â–‘ -->
   <div x-show="$store.app.showAuth"
        @click.self="$store.app.showAuth=false"
        x-transition:enter="transition ease-out duration-200"
@@ -485,61 +39,61 @@ document.addEventListener('alpine:init', () => {
       </div>
 
       <div class="px-6 pb-8 pt-4">
-        <!-- Лого -->
+        <!-- Ð›Ð¾Ð³Ð¾ -->
         <div class="flex items-center gap-2 mb-5">
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base">⚡</div>
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base">âš¡</div>
           <span class="font-display text-lg font-700">QuickBite</span>
         </div>
 
-        <!-- Табы -->
+        <!-- Ð¢Ð°Ð±Ñ‹ -->
         <div class="flex gap-0 mb-6 border-b" style="border-color:#27272a">
           <button @click="$store.app.authPage='login'"
                   class="flex-1 pb-3 text-sm font-semibold transition"
-                  :class="$store.app.authPage==='login'?'tab-active':'tab-inactive'">Войти</button>
+                  :class="$store.app.authPage==='login'?'tab-active':'tab-inactive'">Ð’Ð¾Ð¹Ñ‚Ð¸</button>
           <button @click="$store.app.authPage='register'"
                   class="flex-1 pb-3 text-sm font-semibold transition"
-                  :class="$store.app.authPage==='register'?'tab-active':'tab-inactive'">Регистрация</button>
+                  :class="$store.app.authPage==='register'?'tab-active':'tab-inactive'">Ð ÐµÐ³Ð¸ÑÑ‚Ñ€Ð°Ñ†Ð¸Ñ</button>
         </div>
 
-        <!-- ФОРМА ВХОДА -->
+        <!-- Ð¤ÐžÐ ÐœÐ Ð’Ð¥ÐžÐ”Ð -->
         <div x-show="$store.app.authPage==='login'">
           <div class="flex flex-col gap-3 mb-4">
             <input x-model="$store.app.loginForm.email" type="email" placeholder="Email"
                    class="auth-input" @keyup.enter="$store.app.login()" />
-            <input x-model="$store.app.loginForm.password" type="password" placeholder="Пароль"
+            <input x-model="$store.app.loginForm.password" type="password" placeholder="ÐŸÐ°Ñ€Ð¾Ð»ÑŒ"
                    class="auth-input" @keyup.enter="$store.app.login()" />
           </div>
           <p x-show="$store.app.loginError" x-text="$store.app.loginError"
              class="text-xs mb-3 text-center" style="color:#f87171"></p>
           <button @click="$store.app.login()" class="btn-amber w-full py-3.5 rounded-2xl text-sm">
-            Войти →
+            Ð’Ð¾Ð¹Ñ‚Ð¸ â†’
           </button>
           <p class="text-xs text-center mt-3" style="color:var(--z400)">
-            Нет аккаунта?
-            <button @click="$store.app.authPage='register'" class="underline" style="color:#F59E0B">Зарегистрироваться</button>
+            ÐÐµÑ‚ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ð°?
+            <button @click="$store.app.authPage='register'" class="underline" style="color:#F59E0B">Ð—Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒÑÑ</button>
           </p>
         </div>
 
-        <!-- ФОРМА РЕГИСТРАЦИИ -->
+        <!-- Ð¤ÐžÐ ÐœÐ Ð Ð•Ð“Ð˜Ð¡Ð¢Ð ÐÐ¦Ð˜Ð˜ -->
         <div x-show="$store.app.authPage==='register'">
           <div class="flex flex-col gap-3 mb-4">
-            <input x-model="$store.app.regForm.name" type="text" placeholder="Ваше имя"
+            <input x-model="$store.app.regForm.name" type="text" placeholder="Ð’Ð°ÑˆÐµ Ð¸Ð¼Ñ"
                    class="auth-input" />
-            <input x-model="$store.app.regForm.phone" type="tel" placeholder="Телефон"
+            <input x-model="$store.app.regForm.phone" type="tel" placeholder="Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½"
                    class="auth-input" />
             <input x-model="$store.app.regForm.email" type="email" placeholder="Email"
                    class="auth-input" />
-            <input x-model="$store.app.regForm.password" type="password" placeholder="Пароль (мин. 6 символов)"
+            <input x-model="$store.app.regForm.password" type="password" placeholder="ÐŸÐ°Ñ€Ð¾Ð»ÑŒ (Ð¼Ð¸Ð½. 6 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð¾Ð²)"
                    class="auth-input" @keyup.enter="$store.app.register()" />
           </div>
           <p x-show="$store.app.regError" x-text="$store.app.regError"
              class="text-xs mb-3 text-center" style="color:#f87171"></p>
           <button @click="$store.app.register()" class="btn-amber w-full py-3.5 rounded-2xl text-sm">
-            Создать аккаунт 🎉
+            Ð¡Ð¾Ð·Ð´Ð°Ñ‚ÑŒ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚ ðŸŽ‰
           </button>
           <p class="text-xs text-center mt-3" style="color:var(--z400)">
-            Уже есть аккаунт?
-            <button @click="$store.app.authPage='login'" class="underline" style="color:#F59E0B">Войти</button>
+            Ð£Ð¶Ðµ ÐµÑÑ‚ÑŒ Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚?
+            <button @click="$store.app.authPage='login'" class="underline" style="color:#F59E0B">Ð’Ð¾Ð¹Ñ‚Ð¸</button>
           </p>
         </div>
 
@@ -562,32 +116,32 @@ document.addEventListener('alpine:init', () => {
   <header class="sticky top-0 z-50 px-5 py-4 flex items-center justify-between"
           :style="$store.app.theme==='light'?'background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,0,0,0.08)':'background:rgba(9,9,11,.88);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)'">
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base select-none">⚡</div>
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center btn-amber text-base select-none">âš¡</div>
       <span class="font-display text-xl font-800 tracking-tight"
             :style="$store.app.theme==='light'?'color:#18181b':'color:#ffffff'">QuickBite</span>
     </div>
     <div class="flex items-center gap-2">
 
-      <!-- Кнопка темы: тёмная → ☀️, светлая → 🌙 оранжевая -->
+      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ñ‚ÐµÐ¼Ñ‹: Ñ‚Ñ‘Ð¼Ð½Ð°Ñ â†’ â˜€ï¸, ÑÐ²ÐµÑ‚Ð»Ð°Ñ â†’ ðŸŒ™ Ð¾Ñ€Ð°Ð½Ð¶ÐµÐ²Ð°Ñ -->
       <button @click="$store.app.toggleTheme()"
               class="w-9 h-9 rounded-xl flex items-center justify-center"
               :style="$store.app.theme==='light'?'background:#f4f4f5;border:1px solid #d4d4d8':'background:#27272a'">
-        <!-- Тёмная тема → солнце -->
+        <!-- Ð¢Ñ‘Ð¼Ð½Ð°Ñ Ñ‚ÐµÐ¼Ð° â†’ ÑÐ¾Ð»Ð½Ñ†Ðµ -->
         <svg x-show="$store.app.theme==='dark'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
         </svg>
-        <!-- Светлая тема → луна оранжевая -->
+        <!-- Ð¡Ð²ÐµÑ‚Ð»Ð°Ñ Ñ‚ÐµÐ¼Ð° â†’ Ð»ÑƒÐ½Ð° Ð¾Ñ€Ð°Ð½Ð¶ÐµÐ²Ð°Ñ -->
         <svg x-show="$store.app.theme==='light'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
         </svg>
       </button>
 
-      <!-- Кнопка профиля/войти -->
+      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ð¿Ñ€Ð¾Ñ„Ð¸Ð»Ñ/Ð²Ð¾Ð¹Ñ‚Ð¸ -->
       <button @click="$store.app.role==='guest'?$store.app.openAuth('login'):(($store.app.page=$store.app.role==='admin'?'admin_profile':'user_profile'),$nextTick(()=>lucide.createIcons()))"
               class="w-9 h-9 rounded-xl flex items-center justify-center transition relative"
               :style="['user','admin'].includes($store.app.role)?'background:#F59E0B':'background:#27272a'">
         <i data-lucide="user" class="w-4 h-4" :style="$store.app.role!=='guest'?'color:#000':'color:#a1a1aa'"></i>
-        <!-- Значок роли -->
+        <!-- Ð—Ð½Ð°Ñ‡Ð¾Ðº Ñ€Ð¾Ð»Ð¸ -->
         <span x-show="$store.app.role==='admin'"
               class="absolute -top-1 -right-1 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold"
               style="background:#ef4444;color:#fff;font-size:8px">A</span>
@@ -621,8 +175,8 @@ document.addEventListener('alpine:init', () => {
        x-transition:enter-end="opacity-100 translate-y-0"
        class="mx-4 mt-2 rounded-2xl p-5" style="background:#18181b;border:1px solid #27272a">
     <div class="flex items-center justify-between mb-4">
-      <span class="font-display font-700 text-sm">⚙️ Интеграции</span>
-      <span class="text-xs" style="color:var(--z400)">Хранится в localStorage</span>
+      <span class="font-display font-700 text-sm">âš™ï¸ Ð˜Ð½Ñ‚ÐµÐ³Ñ€Ð°Ñ†Ð¸Ð¸</span>
+      <span class="text-xs" style="color:var(--z400)">Supabase local, Telegram server-side</span>
     </div>
     <div class="grid gap-3">
       <div>
@@ -631,60 +185,50 @@ document.addEventListener('alpine:init', () => {
       </div>
       <div>
         <p class="text-xs mb-1" style="color:var(--z400)">Supabase Anon Key</p>
-        <input x-model="$store.app.config.supabaseKey" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="eyJhbGci…" />
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <p class="text-xs mb-1" style="color:var(--z400)">TG Bot Token</p>
-          <input x-model="$store.app.config.tgBotToken" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="1234:AAAA…" />
-        </div>
-        <div>
-          <p class="text-xs mb-1" style="color:var(--z400)">TG Chat ID</p>
-          <input x-model="$store.app.config.tgChatId" @change="$store.app._saveConfig()" class="cfg-input" placeholder="-100123456" />
-        </div>
+        <input x-model="$store.app.config.supabaseKey" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="eyJhbGciâ€¦" />
       </div>
     </div>
     <div class="mt-3 p-3 rounded-xl text-xs" style="background:#0f0f10;border:1px solid #27272a;color:var(--z400);line-height:1.6">
-      💡 <b style="color:#F59E0B">Supabase:</b> создай таблицу <code>orders</code> (customer_name, customer_phone, customer_address, items jsonb, total float, status text, created_at timestamptz).<br>
-      💡 <b style="color:#F59E0B">Telegram:</b> создай бота через @BotFather → добавь в чат → узнай Chat ID через @getidsbot.
+      ðŸ’¡ <b style="color:#F59E0B">Supabase:</b> ÑÐ¾Ð·Ð´Ð°Ð¹ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ <code>orders</code> (customer_name, customer_phone, customer_address, items jsonb, total float, status text, created_at timestamptz).<br>
+      ðŸ’¡ <b style="color:#F59E0B">Telegram:</b> ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð¸ <code>TG_BOT_TOKEN</code> Ð¸ <code>TG_CHAT_ID</code> Ð² Vercel Environment Variables.
     </div>
     <button @click="$store.app.testTelegram()"
             class="mt-3 w-full py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition"
             style="background:#27272a;color:#a1a1aa;border:1px solid #3f3f46">
       <i data-lucide="send" class="w-4 h-4" style="color:#F59E0B"></i>
-      Тест Telegram — отправить сообщение
+      Ð¢ÐµÑÑ‚ Telegram â€” Ð¾Ñ‚Ð¿Ñ€Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ
     </button>
   </div>
 
   <!-- MAIN -->
   <main class="max-w-2xl mx-auto pb-28" style="overflow-x:clip">
 
-    <!-- ═ МЕНЮ ═ -->
+    <!-- â• ÐœÐ•ÐÐ® â• -->
     <div x-show="$store.app.page==='menu'&&!$store.app.showAdmin&&!$store.app.showSettings" class="slide-up">
       <div class="mt-6 mb-6 px-4">
-        <!-- Гость -->
+        <!-- Ð“Ð¾ÑÑ‚ÑŒ -->
         <div x-show="$store.app.role==='guest'">
-          <p class="text-sm mb-1" style="color:var(--z400)">Привет 👋</p>
-          <h1 class="font-display text-3xl font-800 leading-tight">Голоден?<br><span style="color:#F59E0B">Закажи сейчас.</span></h1>
+          <p class="text-sm mb-1" style="color:var(--z400)">ÐŸÑ€Ð¸Ð²ÐµÑ‚ ðŸ‘‹</p>
+          <h1 class="font-display text-3xl font-800 leading-tight">Ð“Ð¾Ð»Ð¾Ð´ÐµÐ½?<br><span style="color:#F59E0B">Ð—Ð°ÐºÐ°Ð¶Ð¸ ÑÐµÐ¹Ñ‡Ð°Ñ.</span></h1>
           <button @click="$store.app.openAuth('login')"
                   class="mt-4 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 w-fit transition"
                   style="background:#27272a;color:#a1a1aa;border:1px solid #3f3f46">
             <i data-lucide="log-in" class="w-3.5 h-3.5" style="color:#F59E0B"></i>
-            Войти или зарегистрироваться
+            Ð’Ð¾Ð¹Ñ‚Ð¸ Ð¸Ð»Ð¸ Ð·Ð°Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒÑÑ
           </button>
         </div>
-        <!-- Залогинен -->
+        <!-- Ð—Ð°Ð»Ð¾Ð³Ð¸Ð½ÐµÐ½ -->
         <div x-show="$store.app.role!=='guest'">
           <p class="text-sm mb-1" style="color:var(--z400)">
-            <span x-show="$store.app.role==='admin'">👑 Администратор</span>
-            <span x-show="$store.app.role==='user'">👋 Привет,</span>
+            <span x-show="$store.app.role==='admin'">ðŸ‘‘ ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€</span>
+            <span x-show="$store.app.role==='user'">ðŸ‘‹ ÐŸÑ€Ð¸Ð²ÐµÑ‚,</span>
             <span x-show="$store.app.role==='user'" x-text="$store.app.currentUser?.name"></span>
           </p>
-          <h1 class="font-display text-3xl font-800 leading-tight">Голоден?<br><span style="color:#F59E0B">Закажи сейчас.</span></h1>
+          <h1 class="font-display text-3xl font-800 leading-tight">Ð“Ð¾Ð»Ð¾Ð´ÐµÐ½?<br><span style="color:#F59E0B">Ð—Ð°ÐºÐ°Ð¶Ð¸ ÑÐµÐ¹Ñ‡Ð°Ñ.</span></h1>
         </div>
       </div>
 
-      <!-- Категории -->
+      <!-- ÐšÐ°Ñ‚ÐµÐ³Ð¾Ñ€Ð¸Ð¸ -->
       <div class="flex gap-2 overflow-x-auto pb-2 mb-5 cats-scroll" style="padding-left:16px;padding-right:24px">
         <template x-for="cat in $store.app.categories" :key="cat">
           <button @click="$store.app.activeCategory=cat"
@@ -695,13 +239,13 @@ document.addEventListener('alpine:init', () => {
         </template>
       </div>
 
-      <!-- Карточки -->
+      <!-- ÐšÐ°Ñ€Ñ‚Ð¾Ñ‡ÐºÐ¸ -->
       <div class="grid grid-cols-2 gap-4 px-4">
         <template x-for="p in $store.app.filteredProducts" :key="p.id">
           <div class="food-card rounded-2xl overflow-hidden"
                :style="$store.app.theme==='light'?'background:#fff;border:1px solid #e4e4e7':'background:#18181b;border:1px solid #27272a'">
 
-            <!-- Фото — overflow:hidden на враппере, чтобы zoom не вылезал -->
+            <!-- Ð¤Ð¾Ñ‚Ð¾ â€” overflow:hidden Ð½Ð° Ð²Ñ€Ð°Ð¿Ð¿ÐµÑ€Ðµ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ zoom Ð½Ðµ Ð²Ñ‹Ð»ÐµÐ·Ð°Ð» -->
             <div class="card-img-wrap overflow-hidden" style="height:140px;background:#111">
               <img :src="p.img" :alt="p.name"
                    style="width:100%;height:100%;object-fit:cover;display:block"
@@ -723,7 +267,7 @@ document.addEventListener('alpine:init', () => {
                   <button @click="$store.app.addToCart(p)" class="btn-amber w-8 h-8 rounded-xl text-base flex items-center justify-center font-bold">+</button>
                 </div>
                 <div x-show="$store.app.cartQty(p.id)>0" class="flex items-center gap-1">
-                  <button @click="$store.app.changeQty(p.id,-1)" class="qty-btn minus">−</button>
+                  <button @click="$store.app.changeQty(p.id,-1)" class="qty-btn minus">âˆ’</button>
                   <span class="font-bold text-sm w-5 text-center" x-text="$store.app.cartQty(p.id)"></span>
                   <button @click="$store.app.changeQty(p.id,+1)" class="qty-btn plus">+</button>
                 </div>
@@ -734,7 +278,7 @@ document.addEventListener('alpine:init', () => {
       </div>
     </div>
 
-    <!-- ═ ОФОРМЛЕНИЕ ═ -->
+    <!-- â• ÐžÐ¤ÐžÐ ÐœÐ›Ð•ÐÐ˜Ð• â• -->
     <div x-show="$store.app.page==='checkout'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -742,33 +286,33 @@ document.addEventListener('alpine:init', () => {
          class="pt-6 px-4">
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-6 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
       </button>
-      <h2 class="font-display text-2xl font-700 mb-5">Оформление</h2>
+      <h2 class="font-display text-2xl font-700 mb-5">ÐžÑ„Ð¾Ñ€Ð¼Ð»ÐµÐ½Ð¸Ðµ</h2>
       <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
         <template x-for="item in $store.app.cart" :key="item.id">
           <div class="flex justify-between py-2 border-b last:border-0 text-sm" style="border-color:#27272a">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
-            <span style="color:var(--z400)">×<span x-text="item.qty"></span>&nbsp;<span style="color:#F59E0B" x-text="'$'+(item.price*item.qty).toFixed(2)"></span></span>
+            <span style="color:var(--z400)">Ã—<span x-text="item.qty"></span>&nbsp;<span style="color:#F59E0B" x-text="'$'+(item.price*item.qty).toFixed(2)"></span></span>
           </div>
         </template>
         <div class="flex justify-between pt-3">
-          <span class="font-display font-700">Итого</span>
+          <span class="font-display font-700">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
           <span class="font-display font-700" style="color:#F59E0B" x-text="'$'+$store.app.cartTotal"></span>
         </div>
       </div>
       <div class="flex flex-col gap-4">
         <div>
-          <input x-model="$store.app.form.name" type="text" placeholder="Ваше имя" class="form-input" />
+          <input x-model="$store.app.form.name" type="text" placeholder="Ð’Ð°ÑˆÐµ Ð¸Ð¼Ñ" class="form-input" />
           <p x-show="$store.app.formErrors.name" x-text="$store.app.formErrors.name" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <div>
-          <input x-model="$store.app.form.phone" type="tel" placeholder="Телефон" class="form-input" />
+          <input x-model="$store.app.form.phone" type="tel" placeholder="Ð¢ÐµÐ»ÐµÑ„Ð¾Ð½" class="form-input" />
           <p x-show="$store.app.formErrors.phone" x-text="$store.app.formErrors.phone" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <div>
           <div class="relative">
-            <input x-model="$store.app.form.address" type="text" placeholder="Адрес доставки" class="form-input" style="padding-right:48px" />
+            <input x-model="$store.app.form.address" type="text" placeholder="ÐÐ´Ñ€ÐµÑ Ð´Ð¾ÑÑ‚Ð°Ð²ÐºÐ¸" class="form-input" style="padding-right:48px" />
             <button @click="$store.app.getLocation()"
                     class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl flex items-center justify-center" style="background:#27272a">
               <i data-lucide="map-pin" class="w-4 h-4" style="color:#F59E0B"></i>
@@ -777,41 +321,41 @@ document.addEventListener('alpine:init', () => {
           <p x-show="$store.app.formErrors.address" x-text="$store.app.formErrors.address" class="text-xs mt-1" style="color:#f87171"></p>
         </div>
         <p x-show="$store.app.formErrors.cart" x-text="$store.app.formErrors.cart" class="text-xs text-center" style="color:#f87171"></p>
-        <button @click="$store.app.submitOrder()" class="btn-amber w-full py-4 rounded-2xl text-base mt-1">Оформить заказ 🚀</button>
+        <button @click="$store.app.submitOrder()" class="btn-amber w-full py-4 rounded-2xl text-base mt-1">ÐžÑ„Ð¾Ñ€Ð¼Ð¸Ñ‚ÑŒ Ð·Ð°ÐºÐ°Ð· ðŸš€</button>
       </div>
     </div>
 
-    <!-- ═ УСПЕХ ═ -->
+    <!-- â• Ð£Ð¡ÐŸÐ•Ð¥ â• -->
     <div x-show="$store.app.page==='success'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-350"
          x-transition:enter-start="opacity-0 scale-95"
          x-transition:enter-end="opacity-100 scale-100"
          class="flex flex-col items-center text-center pt-16 slide-up px-4">
-      <div class="text-7xl mb-5">🎉</div>
-      <h2 class="font-display text-3xl font-800 mb-2">Заказ принят!</h2>
-      <p class="text-sm mb-8 max-w-xs" style="color:var(--z400)">Уже готовим. Курьер выедет через несколько минут!</p>
+      <div class="text-7xl mb-5">ðŸŽ‰</div>
+      <h2 class="font-display text-3xl font-800 mb-2">Ð—Ð°ÐºÐ°Ð· Ð¿Ñ€Ð¸Ð½ÑÑ‚!</h2>
+      <p class="text-sm mb-8 max-w-xs" style="color:var(--z400)">Ð£Ð¶Ðµ Ð³Ð¾Ñ‚Ð¾Ð²Ð¸Ð¼. ÐšÑƒÑ€ÑŒÐµÑ€ Ð²Ñ‹ÐµÐ´ÐµÑ‚ Ñ‡ÐµÑ€ÐµÐ· Ð½ÐµÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð¼Ð¸Ð½ÑƒÑ‚!</p>
       <div class="w-full rounded-2xl p-5 mb-5 text-left" style="background:#18181b;border:1px solid #27272a">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F59E0B22">
             <i data-lucide="chef-hat" class="w-5 h-5" style="color:#F59E0B"></i>
           </div>
           <div>
-            <p class="font-semibold text-sm">Статус заказа</p>
+            <p class="font-semibold text-sm">Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð°ÐºÐ°Ð·Ð°</p>
             <div class="flex items-center gap-2 mt-0.5">
               <div class="dot-live"></div>
-              <p class="text-xs" style="color:#10b981">Готовится на кухне</p>
+              <p class="text-xs" style="color:#10b981">Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ Ð½Ð° ÐºÑƒÑ…Ð½Ðµ</p>
             </div>
           </div>
         </div>
       </div>
       <button @click="$store.app.page='tracking';$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250)"
-              class="btn-amber w-full py-4 rounded-2xl text-base mb-3">🗺 Следить за курьером</button>
+              class="btn-amber w-full py-4 rounded-2xl text-base mb-3">ðŸ—º Ð¡Ð»ÐµÐ´Ð¸Ñ‚ÑŒ Ð·Ð° ÐºÑƒÑ€ÑŒÐµÑ€Ð¾Ð¼</button>
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="w-full py-3 rounded-2xl text-sm font-semibold transition"
-              style="background:#27272a;color:#a1a1aa">Вернуться в меню</button>
+              style="background:#27272a;color:#a1a1aa">Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒÑÑ Ð² Ð¼ÐµÐ½ÑŽ</button>
     </div>
 
-    <!-- ═ ТРЕКИНГ ═ -->
+    <!-- â• Ð¢Ð Ð•ÐšÐ˜ÐÐ“ â• -->
     <div x-show="$store.app.page==='tracking'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -819,35 +363,35 @@ document.addEventListener('alpine:init', () => {
          class="pt-6 px-4">
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-5 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
       </button>
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display text-2xl font-700">Трекинг</h2>
+        <h2 class="font-display text-2xl font-700">Ð¢Ñ€ÐµÐºÐ¸Ð½Ð³</h2>
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" style="background:#10b98122">
           <div class="dot-live"></div>
-          <span class="text-xs font-semibold" style="color:#10b981">В пути</span>
+          <span class="text-xs font-semibold" style="color:#10b981">Ð’ Ð¿ÑƒÑ‚Ð¸</span>
         </div>
       </div>
       <div id="tracking-map" class="w-full mb-5"></div>
       <div x-show="$store.app.trackingOrder" class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
         <div class="flex items-center justify-between mb-3">
-          <span class="font-display font-700 text-sm">Состав заказа</span>
+          <span class="font-display font-700 text-sm">Ð¡Ð¾ÑÑ‚Ð°Ð² Ð·Ð°ÐºÐ°Ð·Ð°</span>
           <span class="text-xs" style="color:var(--z400)" x-text="'#'+String($store.app.trackingOrder?.id||'').slice(-4)"></span>
         </div>
         <template x-for="item in ($store.app.trackingOrder?.items||[])" :key="item.id">
           <div class="flex justify-between py-1.5 border-b last:border-0 text-sm" style="border-color:#27272a">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
-            <span style="color:var(--z400)">×<span x-text="item.qty"></span></span>
+            <span style="color:var(--z400)">Ã—<span x-text="item.qty"></span></span>
           </div>
         </template>
         <div class="flex justify-between pt-3">
-          <span class="font-display font-700 text-sm">Итого</span>
+          <span class="font-display font-700 text-sm">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
           <span class="font-display font-700 text-sm" style="color:#F59E0B" x-text="'$'+($store.app.trackingOrder?.total||0).toFixed(2)"></span>
         </div>
       </div>
     </div>
 
-    <!-- ═ ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ═ -->
+    <!-- â• ÐŸÐ ÐžÐ¤Ð˜Ð›Ð¬ ÐŸÐžÐ›Ð¬Ð—ÐžÐ’ÐÐ¢Ð•Ð›Ð¯ â• -->
     <div x-show="$store.app.page==='user_profile'&&!$store.app.showAdmin"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -856,51 +400,51 @@ document.addEventListener('alpine:init', () => {
 
       <button @click="$store.app.page='menu';$nextTick(()=>lucide.createIcons())"
               class="flex items-center gap-1 text-sm mb-6 hover:text-white transition" style="color:var(--z400)">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> ÐÐ°Ð·Ð°Ð´
       </button>
 
-      <!-- Аватар + имя -->
+      <!-- ÐÐ²Ð°Ñ‚Ð°Ñ€ + Ð¸Ð¼Ñ -->
       <div class="flex flex-col items-center mb-7">
         <div class="w-20 h-20 rounded-2xl flex items-center justify-center mb-3 text-3xl"
              style="background:linear-gradient(135deg,#F59E0B,#D97706)">
-          👤
+          ðŸ‘¤
         </div>
         <h2 class="font-display text-2xl font-700" x-text="$store.app.currentUser?.name"></h2>
         <p class="text-sm mt-1" style="color:var(--z400)" x-text="$store.app.currentUser?.email"></p>
         <p class="text-sm" style="color:var(--z400)" x-text="$store.app.currentUser?.phone"></p>
-        <!-- Бейдж роли -->
+        <!-- Ð‘ÐµÐ¹Ð´Ð¶ Ñ€Ð¾Ð»Ð¸ -->
         <span class="mt-2 px-3 py-1 rounded-full text-xs font-semibold" style="background:rgba(245,158,11,.15);color:#F59E0B">
-          🛍 Покупатель
+          ðŸ› ÐŸÐ¾ÐºÑƒÐ¿Ð°Ñ‚ÐµÐ»ÑŒ
         </span>
       </div>
 
-      <!-- Статистика -->
+      <!-- Ð¡Ñ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ° -->
       <div class="grid grid-cols-2 gap-3 mb-6">
         <div class="profile-stat">
           <p class="text-2xl font-display font-700" style="color:#F59E0B"
              x-text="$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).length"></p>
-          <p class="text-xs mt-1" style="color:var(--z400)">Заказов</p>
+          <p class="text-xs mt-1" style="color:var(--z400)">Ð—Ð°ÐºÐ°Ð·Ð¾Ð²</p>
         </div>
         <div class="profile-stat">
           <p class="text-2xl font-display font-700" style="color:#F59E0B"
              x-text="'$'+$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).reduce((s,o)=>s+o.total,0).toFixed(2)"></p>
-          <p class="text-xs mt-1" style="color:var(--z400)">Потрачено</p>
+          <p class="text-xs mt-1" style="color:var(--z400)">ÐŸÐ¾Ñ‚Ñ€Ð°Ñ‡ÐµÐ½Ð¾</p>
         </div>
       </div>
 
-      <!-- История заказов пользователя -->
+      <!-- Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ Ð·Ð°ÐºÐ°Ð·Ð¾Ð² Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»Ñ -->
       <div class="rounded-2xl overflow-hidden mb-5" style="background:var(--z900);border:1px solid var(--z700)">
         <div class="p-4 border-b" style="border-color:var(--z700)">
-          <h3 class="font-display font-700 text-sm">📦 Мои заказы</h3>
+          <h3 class="font-display font-700 text-sm">ðŸ“¦ ÐœÐ¾Ð¸ Ð·Ð°ÐºÐ°Ð·Ñ‹</h3>
         </div>
         <div x-show="!$store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email).length"
              class="p-5 text-sm text-center" style="color:var(--z400)">
-          Заказов пока нет 🍽
+          Ð—Ð°ÐºÐ°Ð·Ð¾Ð² Ð¿Ð¾ÐºÐ° Ð½ÐµÑ‚ ðŸ½
         </div>
         <template x-for="order in $store.app.orders.filter(o=>o.customer?.email===$store.app.currentUser?.email)" :key="order.id">
           <div class="p-4 border-b last:border-0" style="border-color:var(--z700)">
             <div class="flex items-center justify-between mb-2">
-              <span class="font-semibold text-sm" x-text="'Заказ #'+String(order.id).slice(-4)"></span>
+              <span class="font-semibold text-sm" x-text="'Ð—Ð°ÐºÐ°Ð· #'+String(order.id).slice(-4)"></span>
               <span class="font-display font-700 text-sm" style="color:#F59E0B" x-text="'$'+order.total.toFixed(2)"></span>
             </div>
             <div class="flex flex-wrap gap-1 mb-2">
@@ -914,23 +458,23 @@ document.addEventListener('alpine:init', () => {
               <span class="text-xs" style="color:var(--z400)" x-text="new Date(order.createdAt).toLocaleDateString('ru')"></span>
               <span class="status-badge"
                     :class="{'s-new':order.status==='new','s-cooking':order.status==='cooking','s-delivery':order.status==='delivery','s-done':order.status==='done'}"
-                    x-text="({new:'🆕 Новый',cooking:'🍳 Готовится',delivery:'🛵 В пути',done:'✅ Доставлен'})[order.status]||order.status">
+                    x-text="({new:'ðŸ†• ÐÐ¾Ð²Ñ‹Ð¹',cooking:'ðŸ³ Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ',delivery:'ðŸ›µ Ð’ Ð¿ÑƒÑ‚Ð¸',done:'âœ… Ð”Ð¾ÑÑ‚Ð°Ð²Ð»ÐµÐ½'})[order.status]||order.status">
               </span>
             </div>
           </div>
         </template>
       </div>
 
-      <!-- Кнопка выйти -->
+      <!-- ÐšÐ½Ð¾Ð¿ÐºÐ° Ð²Ñ‹Ð¹Ñ‚Ð¸ -->
       <button @click="$store.app.logout()"
               class="w-full py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition"
               style="background:#27272a;color:#f87171;border:1px solid #3f3f46">
         <i data-lucide="log-out" class="w-4 h-4"></i>
-        Выйти из аккаунта
+        Ð’Ñ‹Ð¹Ñ‚Ð¸ Ð¸Ð· Ð°ÐºÐºÐ°ÑƒÐ½Ñ‚Ð°
       </button>
     </div>
 
-    <!-- ═ АДМИНИСТРАТОР ═ -->
+    <!-- â• ÐÐ”ÐœÐ˜ÐÐ˜Ð¡Ð¢Ð ÐÐ¢ÐžÐ  â• -->
     <div x-show="$store.app.showAdmin&&$store.app.role==='admin'"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-4"
@@ -938,13 +482,13 @@ document.addEventListener('alpine:init', () => {
          class="pt-6 px-4">
       <div class="flex items-center justify-between mb-6">
         <div>
-          <h2 class="font-display text-2xl font-700">Администратор</h2>
-          <p class="text-xs mt-0.5" style="color:#F59E0B">👑 Панель управления</p>
+          <h2 class="font-display text-2xl font-700">ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€</h2>
+          <p class="text-xs mt-0.5" style="color:#F59E0B">ðŸ‘‘ ÐŸÐ°Ð½ÐµÐ»ÑŒ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ</p>
         </div>
         <div class="flex gap-2">
           <button @click="$store.app.logout()"
                   class="w-8 h-8 rounded-xl flex items-center justify-center transition" style="background:#27272a;color:#f87171"
-                  title="Выйти">
+                  title="Ð’Ñ‹Ð¹Ñ‚Ð¸">
             <i data-lucide="log-out" class="w-4 h-4"></i>
           </button>
           <button @click="$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons())"
@@ -955,17 +499,17 @@ document.addEventListener('alpine:init', () => {
       </div>
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
-          <p class="text-xs mb-1" style="color:var(--z400)">💰 Выручка</p>
+          <p class="text-xs mb-1" style="color:var(--z400)">ðŸ’° Ð’Ñ‹Ñ€ÑƒÑ‡ÐºÐ°</p>
           <p class="font-display text-2xl font-700" style="color:#F59E0B" x-text="'$'+$store.app.totalRevenue"></p>
         </div>
         <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
-          <p class="text-xs mb-1" style="color:var(--z400)">📦 Заказов</p>
+          <p class="text-xs mb-1" style="color:var(--z400)">ðŸ“¦ Ð—Ð°ÐºÐ°Ð·Ð¾Ð²</p>
           <p class="font-display text-2xl font-700" x-text="$store.app.orders.length"></p>
         </div>
       </div>
       <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
-        <h3 class="font-display font-700 text-sm mb-3" style="color:#F59E0B">🏆 Топ продаж</h3>
-        <div x-show="!$store.app.topSellers.length" class="text-sm" style="color:var(--z400)">Нет данных</div>
+        <h3 class="font-display font-700 text-sm mb-3" style="color:#F59E0B">ðŸ† Ð¢Ð¾Ð¿ Ð¿Ñ€Ð¾Ð´Ð°Ð¶</h3>
+        <div x-show="!$store.app.topSellers.length" class="text-sm" style="color:var(--z400)">ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…</div>
         <template x-for="([name,qty],i) in $store.app.topSellers" :key="name">
           <div class="flex items-center justify-between py-2 border-b last:border-0" style="border-color:#27272a">
             <div class="flex items-center gap-2">
@@ -974,26 +518,26 @@ document.addEventListener('alpine:init', () => {
                     x-text="i+1"></span>
               <span class="text-sm" x-text="name"></span>
             </div>
-            <span class="text-xs" style="color:var(--z400)" x-text="qty+' шт.'"></span>
+            <span class="text-xs" style="color:var(--z400)" x-text="qty+' ÑˆÑ‚.'"></span>
           </div>
         </template>
       </div>
       <div class="rounded-2xl overflow-hidden" style="background:#18181b;border:1px solid #27272a">
         <div class="p-4 border-b flex items-center justify-between" style="border-color:#27272a">
-          <h3 class="font-display font-700 text-sm">Все заказы</h3>
+          <h3 class="font-display font-700 text-sm">Ð’ÑÐµ Ð·Ð°ÐºÐ°Ð·Ñ‹</h3>
           <button x-show="$store.app.orders.length"
-                  @click="if(confirm('Очистить все заказы?')){$store.app.orders=[];localStorage.removeItem('qb_orders');}"
-                  class="text-xs hover:text-red-400 transition" style="color:var(--z400)">Очистить</button>
+                  @click="if(confirm('ÐžÑ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð·Ð°ÐºÐ°Ð·Ñ‹?')){$store.app.orders=[];localStorage.removeItem('qb_orders');}"
+                  class="text-xs hover:text-red-400 transition" style="color:var(--z400)">ÐžÑ‡Ð¸ÑÑ‚Ð¸Ñ‚ÑŒ</button>
         </div>
-        <div x-show="!$store.app.orders.length" class="p-5 text-sm text-center" style="color:var(--z400)">Нет заказов</div>
+        <div x-show="!$store.app.orders.length" class="p-5 text-sm text-center" style="color:var(--z400)">ÐÐµÑ‚ Ð·Ð°ÐºÐ°Ð·Ð¾Ð²</div>
         <div class="overflow-x-auto" x-show="$store.app.orders.length">
           <table class="w-full text-sm admin-table">
             <thead>
               <tr style="border-bottom:1px solid #27272a">
                 <th class="p-3 text-left">ID</th>
-                <th class="p-3 text-left">Клиент</th>
-                <th class="p-3 text-left">Сумма</th>
-                <th class="p-3 text-left">Статус</th>
+                <th class="p-3 text-left">ÐšÐ»Ð¸ÐµÐ½Ñ‚</th>
+                <th class="p-3 text-left">Ð¡ÑƒÐ¼Ð¼Ð°</th>
+                <th class="p-3 text-left">Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</th>
               </tr>
             </thead>
             <tbody>
@@ -1008,7 +552,7 @@ document.addEventListener('alpine:init', () => {
                   <td class="p-3">
                     <span class="status-badge"
                           :class="{'s-new':order.status==='new','s-cooking':order.status==='cooking','s-delivery':order.status==='delivery','s-done':order.status==='done'}"
-                          x-text="({new:'🆕 Новый',cooking:'🍳 Готовится',delivery:'🛵 В пути',done:'✅ Доставлен'})[order.status]||order.status">
+                          x-text="({new:'ðŸ†• ÐÐ¾Ð²Ñ‹Ð¹',cooking:'ðŸ³ Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ñ‚ÑÑ',delivery:'ðŸ›µ Ð’ Ð¿ÑƒÑ‚Ð¸',done:'âœ… Ð”Ð¾ÑÑ‚Ð°Ð²Ð»ÐµÐ½'})[order.status]||order.status">
                     </span>
                   </td>
                 </tr>
@@ -1028,12 +572,12 @@ document.addEventListener('alpine:init', () => {
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='menu'&&!$store.app.showAdmin?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="utensils" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">Меню</span>
+      <span class="text-xs font-semibold">ÐœÐµÐ½ÑŽ</span>
     </button>
     <button @click="$store.app.showCart=true;$nextTick(()=>lucide.createIcons())"
             class="flex flex-col items-center gap-1 relative transition" style="color:#52525b">
       <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">Корзина</span>
+      <span class="text-xs font-semibold">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð°</span>
       <span x-show="$store.app.cartCount>0" x-text="$store.app.cartCount"
             class="absolute -top-1 right-0 w-4 h-4 rounded-full text-xs font-bold flex items-center justify-center"
             style="background:#F59E0B;color:#000"></span>
@@ -1042,13 +586,13 @@ document.addEventListener('alpine:init', () => {
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='checkout'?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="receipt-text" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">Заказ</span>
+      <span class="text-xs font-semibold">Ð—Ð°ÐºÐ°Ð·</span>
     </button>
-    <button @click="if($store.app.trackingOrder){$store.app.page='tracking';$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250);}else{$store.app.showToast('Сначала сделай заказ 😊');}"
+    <button @click="if($store.app.trackingOrder){$store.app.page='tracking';$store.app.showAdmin=false;$nextTick(()=>lucide.createIcons());setTimeout(()=>$store.app.initMap(),250);}else{$store.app.showToast('Ð¡Ð½Ð°Ñ‡Ð°Ð»Ð° ÑÐ´ÐµÐ»Ð°Ð¹ Ð·Ð°ÐºÐ°Ð· ðŸ˜Š');}"
             class="flex flex-col items-center gap-1 transition"
             :style="$store.app.page==='tracking'?'color:#F59E0B':'color:#52525b'">
       <i data-lucide="map" class="w-5 h-5"></i>
-      <span class="text-xs font-semibold">Карта</span>
+      <span class="text-xs font-semibold">ÐšÐ°Ñ€Ñ‚Ð°</span>
     </button>
   </nav>
 
@@ -1075,28 +619,28 @@ document.addEventListener('alpine:init', () => {
       </div>
       <div class="px-5 pb-8">
         <div class="flex items-center justify-between py-4">
-          <h3 class="font-display text-xl font-700">Корзина</h3>
+          <h3 class="font-display text-xl font-700">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð°</h3>
           <button @click="$store.app.showCart=false" class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:#27272a">
             <i data-lucide="x" class="w-4 h-4"></i>
           </button>
         </div>
         <div x-show="!$store.app.cart.length" class="text-center py-14">
-          <div class="text-5xl mb-3">🛒</div>
-          <p class="text-sm" style="color:var(--z400)">Корзина пуста</p>
+          <div class="text-5xl mb-3">ðŸ›’</div>
+          <p class="text-sm" style="color:var(--z400)">ÐšÐ¾Ñ€Ð·Ð¸Ð½Ð° Ð¿ÑƒÑÑ‚Ð°</p>
         </div>
         <template x-for="item in $store.app.cart" :key="item.id">
           <div class="flex items-center gap-3 py-3 border-b" style="border-color:#27272a">
             <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style="background:#27272a">
               <img :src="item.img" :alt="item.name" style="width:100%;height:100%;object-fit:cover"
                    :data-emoji="item.emoji"
-                   onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.5rem;display:flex;align-items:center;justify-content:center;height:100%\'>' + (this.dataset.emoji || '🍽') + '</span>'" />
+                   onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:1.5rem;display:flex;align-items:center;justify-content:center;height:100%\'>' + (this.dataset.emoji || 'ðŸ½') + '</span>'" />
             </div>
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-sm truncate" x-text="item.name"></p>
               <p class="text-xs" style="color:#F59E0B" x-text="'$'+item.price.toFixed(2)"></p>
             </div>
             <div class="flex items-center gap-2">
-              <button @click="$store.app.changeQty(item.id,-1)" class="qty-btn minus">−</button>
+              <button @click="$store.app.changeQty(item.id,-1)" class="qty-btn minus">âˆ’</button>
               <span class="font-bold text-sm w-5 text-center" x-text="item.qty"></span>
               <button @click="$store.app.changeQty(item.id,+1)" class="qty-btn plus">+</button>
             </div>
@@ -1104,17 +648,19 @@ document.addEventListener('alpine:init', () => {
         </template>
         <div x-show="$store.app.cart.length" class="pt-4">
           <div class="flex justify-between items-center mb-4">
-            <span class="text-sm" style="color:var(--z400)">Итого</span>
+            <span class="text-sm" style="color:var(--z400)">Ð˜Ñ‚Ð¾Ð³Ð¾</span>
             <span class="font-display text-xl font-700" style="color:#F59E0B" x-text="'$'+$store.app.cartTotal"></span>
           </div>
           <button @click="$store.app.showCart=false;$store.app.page='checkout';$nextTick(()=>lucide.createIcons())"
-                  class="btn-amber w-full py-4 rounded-2xl text-base">Оформить →</button>
+                  class="btn-amber w-full py-4 rounded-2xl text-base">ÐžÑ„Ð¾Ñ€Ð¼Ð¸Ñ‚ÑŒ â†’</button>
         </div>
       </div>
     </div>
   </div>
 
 </div>
-<script>document.addEventListener('DOMContentLoaded',()=>lucide.createIcons());</script>
+  <script src="assets/js/app.js"></script>
 </body>
 </html>
+
+
