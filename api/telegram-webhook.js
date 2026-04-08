@@ -101,7 +101,7 @@
 
   const chatId = message.chat.id;
   const user = message.from || {};
-  const displayName = user.username || user.first_name || user.last_name || 'друг';
+  const displayName = user.first_name || [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'друг';
   const text = typeof message.text === 'string' ? message.text.trim() : '';
   const isStartCommand = /^\/start(?:@\w+)?(?:\s|$)/i.test(text);
 
@@ -124,7 +124,7 @@
     return res.status(200).json({ ok: true, ignored: true, reason: 'Not /start or web_app_data' });
   }
 
-  const greeting = `Привет ${displayName} если ты хочешь поесть нажми кнопку Menu слева снизу от меня`;
+  const greeting = `✨ Привет, ${displayName}! Добро пожаловать в QuickBite 🍕\nЧтобы выбрать еду, нажми «Menu» слева снизу 👇`;
 
   try {
     await sendMessage(chatId, greeting);
