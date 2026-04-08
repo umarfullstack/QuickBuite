@@ -2,6 +2,14 @@
   const botToken = (process.env.TG_BOT_TOKEN || '').trim();
   const testChatId = (process.env.TG_CHAT_ID || '').trim();
 
+  const requestUrl = (() => {
+    try {
+      return new URL(req.url || '', 'https://local.test');
+    } catch (e) {
+      return null;
+    }
+  })();
+
   async function sendMessage(chatId, text) {
     const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
@@ -16,7 +24,46 @@
     return tgData;
   }
 
+  async function ensureWebhook() {
+    const protoHeader = (req.headers['x-forwarded-proto'] || '').toString().split(',')[0].trim();
+    const hostHeader = (req.headers['x-forwarded-host'] || req.headers.host || '').toString().split(',')[0].trim();
+    const proto = protoHeader || 'https';
+    const host = hostHeader;
+    if (!host) return { ok: false, reason: 'no_host' };
+
+    const webhookUrl = `${proto}://${host}/api/telegram-webhook`;
+    const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: webhookUrl,
+        drop_pending_updates: true
+      })
+    });
+
+    const tgData = await tgRes.json().catch(() => ({}));
+    return { ok: tgRes.ok && tgData.ok !== false, webhookUrl, telegram: tgData };
+  }
+
   if (req.method === 'GET') {
+    const autoSetupParam =
+      (req.query && req.query.auto_setup) ||
+      (requestUrl && requestUrl.searchParams.get('auto_setup')) ||
+      '';
+
+    if (String(autoSetupParam) === '1') {
+      if (!botToken) {
+        return res.status(500).json({ ok: false, error: 'TG_BOT_TOKEN is not configured' });
+      }
+      try {
+        const setup = await ensureWebhook();
+        if (!setup.ok) return res.status(500).json({ ok: false, setup });
+        return res.status(200).json({ ok: true, auto_setup: true, setup });
+      } catch (error) {
+        return res.status(500).json({ ok: false, error: String(error.message || error) });
+      }
+    }
+
     if (req.query && String(req.query.send_test) === '1') {
       if (!botToken || !testChatId) {
         return res.status(500).json({ ok: false, error: 'TG_BOT_TOKEN or TG_CHAT_ID is not configured' });

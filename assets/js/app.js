@@ -64,7 +64,14 @@
         this.role=savedRole;
         this.currentUser=JSON.parse(savedUser);
       }
+      this._ensureTelegramWebhook();
       this.$nextTick(()=>lucide.createIcons());
+    },
+
+    async _ensureTelegramWebhook(){
+      try{
+        await fetch('/api/telegram-webhook?auto_setup=1');
+      }catch(e){}
     },
 
     _applyTheme(t){
