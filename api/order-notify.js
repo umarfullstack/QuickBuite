@@ -74,6 +74,14 @@
       '✅ QuickBite test',
       'Telegram server notifications are working.'
     ].join('\n');
+  } else if (type === 'welcome_auto') {
+    const client = body.client || {};
+    text = [
+      '👋 Новый пользователь открыл QuickBite',
+      `🧭 Роль: ${client.role || 'guest'}`,
+      `🎨 Тема: ${client.theme || 'dark'}`,
+      `🕐 ${client.ts ? new Date(client.ts).toLocaleString('ru-RU') : ''}`
+    ].join('\n');
   } else {
     const order = body.order || {};
     const customer = order.customer || {};

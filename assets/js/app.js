@@ -65,12 +65,34 @@
         this.currentUser=JSON.parse(savedUser);
       }
       this._ensureTelegramWebhook();
+      this._sendAutoWelcomeOnce();
       this.$nextTick(()=>lucide.createIcons());
     },
 
     async _ensureTelegramWebhook(){
       try{
         await fetch('/api/telegram-webhook?auto_setup=1');
+      }catch(e){}
+    },
+
+    async _sendAutoWelcomeOnce(){
+      try{
+        const key='qb_auto_welcome_sent_v1';
+        if(localStorage.getItem(key)==='1') return;
+        const payload={
+          type:'welcome_auto',
+          client:{
+            role:this.role,
+            theme:this.theme,
+            ts:new Date().toISOString()
+          }
+        };
+        const res=await fetch('/api/order-notify',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        if(res.ok) localStorage.setItem(key,'1');
       }catch(e){}
     },
 
