@@ -1,21 +1,6 @@
 ﻿module.exports = async function handler(req, res) {
-  if (req.method === 'GET') {
-    return res.status(200).json({
-      ok: true,
-      service: 'telegram-webhook',
-      configured: Boolean(process.env.TG_BOT_TOKEN),
-      route: '/api/telegram-webhook'
-    });
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
-  }
-
-  const botToken = process.env.TG_BOT_TOKEN;
-  if (!botToken) {
-    return res.status(500).json({ ok: false, error: 'TG_BOT_TOKEN is not configured' });
-  }
+  const botToken = (process.env.TG_BOT_TOKEN || '').trim();
+  const testChatId = (process.env.TG_CHAT_ID || '').trim();
 
   async function sendMessage(chatId, text) {
     const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -28,6 +13,36 @@
     if (!tgRes.ok || tgData.ok === false) {
       throw new Error(`Telegram sendMessage failed: ${JSON.stringify(tgData)}`);
     }
+    return tgData;
+  }
+
+  if (req.method === 'GET') {
+    if (req.query && String(req.query.send_test) === '1') {
+      if (!botToken || !testChatId) {
+        return res.status(500).json({ ok: false, error: 'TG_BOT_TOKEN or TG_CHAT_ID is not configured' });
+      }
+      try {
+        const data = await sendMessage(testChatId, '✅ Telegram webhook test OK');
+        return res.status(200).json({ ok: true, direct_test: true, telegram: data });
+      } catch (error) {
+        return res.status(500).json({ ok: false, error: String(error.message || error) });
+      }
+    }
+
+    return res.status(200).json({
+      ok: true,
+      service: 'telegram-webhook',
+      configured: Boolean(botToken),
+      route: '/api/telegram-webhook'
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ ok: false, error: 'Method Not Allowed' });
+  }
+
+  if (!botToken) {
+    return res.status(500).json({ ok: false, error: 'TG_BOT_TOKEN is not configured' });
   }
 
   const update = req.body || {};
