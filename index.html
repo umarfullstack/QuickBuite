@@ -28,7 +28,7 @@
        style="background:rgba(0,0,0,0.75)">
 
     <div class="w-full max-w-sm rounded-t-3xl sm:rounded-3xl overflow-hidden"
-         style="background:#18181b;border:1px solid #27272a"
+         style="background:var(--z900);border:1px solid var(--z700)"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="transform translate-y-full sm:translate-y-4 opacity-0"
          x-transition:enter-end="transform translate-y-0 opacity-100">
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Табы -->
-        <div class="flex gap-0 mb-6 border-b" style="border-color:#27272a">
+        <div class="flex gap-0 mb-6 border-b" style="border-color:var(--z700)">
           <button @click="$store.app.authPage='login'"
                   class="flex-1 pb-3 text-sm font-semibold transition"
                   :class="$store.app.authPage==='login'?'tab-active':'tab-inactive'">Войти</button>
@@ -125,7 +125,7 @@
       <!-- Кнопка темы: тёмная → ☀️, светлая → 🌙 оранжевая -->
       <button @click="$store.app.toggleTheme()"
               class="w-9 h-9 rounded-xl flex items-center justify-center"
-              :style="$store.app.theme==='light'?'background:#27272a;border:1px solid #27272a':'background:#27272a'">
+              :style="$store.app.theme==='light'?'background:#27272a;border:1px solid var(--z700)':'background:#27272a'">
         <!-- Тёмная тема → солнце -->
         <svg x-show="$store.app.theme==='dark'" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
@@ -173,7 +173,7 @@
        x-transition:enter="transition ease-out duration-200"
        x-transition:enter-start="opacity-0 -translate-y-2"
        x-transition:enter-end="opacity-100 translate-y-0"
-       class="mx-4 mt-2 rounded-2xl p-5" style="background:#18181b;border:1px solid #27272a">
+       class="mx-4 mt-2 rounded-2xl p-5" style="background:var(--z900);border:1px solid var(--z700)">
     <div class="flex items-center justify-between mb-4">
       <span class="font-display font-700 text-sm">⚙️ Интеграции</span>
       <span class="text-xs" style="color:var(--z400)">Supabase local, Telegram server-side</span>
@@ -188,7 +188,7 @@
         <input x-model="$store.app.config.supabaseKey" @change="$store.app._saveConfig()" type="password" class="cfg-input" placeholder="eyJhbGci…" />
       </div>
     </div>
-    <div class="mt-3 p-3 rounded-xl text-xs" style="background:#0f0f10;border:1px solid #27272a;color:var(--z400);line-height:1.6">
+    <div class="mt-3 p-3 rounded-xl text-xs" style="background:var(--z950);border:1px solid var(--z700);color:var(--z400);line-height:1.6">
       💡 <b style="color:#F59E0B">Supabase:</b> создай таблицу <code>orders</code> (customer_name, customer_phone, customer_address, items jsonb, total float, status text, created_at timestamptz).<br>
       💡 <b style="color:#F59E0B">Telegram:</b> установи <code>TG_BOT_TOKEN</code> и <code>TG_CHAT_ID</code> в Vercel Environment Variables.
     </div>
@@ -243,7 +243,7 @@
       <div class="grid grid-cols-2 gap-4 px-4">
         <template x-for="p in $store.app.filteredProducts" :key="p.id">
           <div class="food-card rounded-2xl overflow-hidden"
-               :style="$store.app.theme==='light'?'background:#fff;border:1px solid #e4e4e7':'background:#18181b;border:1px solid #27272a'">
+               :style="$store.app.theme==='light'?'background:#fff;border:1px solid #e4e4e7':'background:var(--z900);border:1px solid var(--z700)'">
 
             <!-- Фото — overflow:hidden на враппере, чтобы zoom не вылезал -->
             <div class="card-img-wrap overflow-hidden" style="height:140px;background:#111">
@@ -289,9 +289,9 @@
         <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад
       </button>
       <h2 class="font-display text-2xl font-700 mb-5">Оформление</h2>
-      <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
+      <div class="rounded-2xl p-4 mb-5" style="background:var(--z900);border:1px solid var(--z700)">
         <template x-for="item in $store.app.cart" :key="item.id">
-          <div class="flex justify-between py-2 border-b last:border-0 text-sm" style="border-color:#27272a">
+          <div class="flex justify-between py-2 border-b last:border-0 text-sm" style="border-color:var(--z700)">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
             <span style="color:var(--z400)">×<span x-text="item.qty"></span>&nbsp;<span style="color:#F59E0B" x-text="'$'+(item.price*item.qty).toFixed(2)"></span></span>
           </div>
@@ -334,7 +334,7 @@
       <div class="text-7xl mb-5">🎉</div>
       <h2 class="font-display text-3xl font-800 mb-2">Заказ принят!</h2>
       <p class="text-sm mb-8 max-w-xs" style="color:var(--z400)">Уже готовим. Курьер выедет через несколько минут!</p>
-      <div class="w-full rounded-2xl p-5 mb-5 text-left" style="background:#18181b;border:1px solid #27272a">
+      <div class="w-full rounded-2xl p-5 mb-5 text-left" style="background:var(--z900);border:1px solid var(--z700)">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#F59E0B22">
             <i data-lucide="chef-hat" class="w-5 h-5" style="color:#F59E0B"></i>
@@ -373,13 +373,13 @@
         </div>
       </div>
       <div id="tracking-map" class="w-full mb-5"></div>
-      <div x-show="$store.app.trackingOrder" class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
+      <div x-show="$store.app.trackingOrder" class="rounded-2xl p-4" style="background:var(--z900);border:1px solid var(--z700)">
         <div class="flex items-center justify-between mb-3">
           <span class="font-display font-700 text-sm">Состав заказа</span>
           <span class="text-xs" style="color:var(--z400)" x-text="'#'+String($store.app.trackingOrder?.id||'').slice(-4)"></span>
         </div>
         <template x-for="item in ($store.app.trackingOrder?.items||[])" :key="item.id">
-          <div class="flex justify-between py-1.5 border-b last:border-0 text-sm" style="border-color:#27272a">
+          <div class="flex justify-between py-1.5 border-b last:border-0 text-sm" style="border-color:var(--z700)">
             <span><span x-text="item.emoji"></span> <span x-text="item.name"></span></span>
             <span style="color:var(--z400)">×<span x-text="item.qty"></span></span>
           </div>
@@ -498,20 +498,20 @@
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4 mb-6">
-        <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
+        <div class="rounded-2xl p-4" style="background:var(--z900);border:1px solid var(--z700)">
           <p class="text-xs mb-1" style="color:var(--z400)">💰 Выручка</p>
           <p class="font-display text-2xl font-700" style="color:#F59E0B" x-text="'$'+$store.app.totalRevenue"></p>
         </div>
-        <div class="rounded-2xl p-4" style="background:#18181b;border:1px solid #27272a">
+        <div class="rounded-2xl p-4" style="background:var(--z900);border:1px solid var(--z700)">
           <p class="text-xs mb-1" style="color:var(--z400)">📦 Заказов</p>
           <p class="font-display text-2xl font-700" x-text="$store.app.orders.length"></p>
         </div>
       </div>
-      <div class="rounded-2xl p-4 mb-5" style="background:#18181b;border:1px solid #27272a">
+      <div class="rounded-2xl p-4 mb-5" style="background:var(--z900);border:1px solid var(--z700)">
         <h3 class="font-display font-700 text-sm mb-3" style="color:#F59E0B">🏆 Топ продаж</h3>
         <div x-show="!$store.app.topSellers.length" class="text-sm" style="color:var(--z400)">Нет данных</div>
         <template x-for="([name,qty],i) in $store.app.topSellers" :key="name">
-          <div class="flex items-center justify-between py-2 border-b last:border-0" style="border-color:#27272a">
+          <div class="flex items-center justify-between py-2 border-b last:border-0" style="border-color:var(--z700)">
             <div class="flex items-center gap-2">
               <span class="w-5 h-5 rounded-md text-xs font-bold flex items-center justify-center"
                     :style="i===0?'background:#F59E0B;color:#000':'background:#27272a;color:#a1a1aa'"
@@ -522,8 +522,8 @@
           </div>
         </template>
       </div>
-      <div class="rounded-2xl overflow-hidden" style="background:#18181b;border:1px solid #27272a">
-        <div class="p-4 border-b flex items-center justify-between" style="border-color:#27272a">
+      <div class="rounded-2xl overflow-hidden" style="background:var(--z900);border:1px solid var(--z700)">
+        <div class="p-4 border-b flex items-center justify-between" style="border-color:var(--z700)">
           <h3 class="font-display font-700 text-sm">Все заказы</h3>
           <button x-show="$store.app.orders.length"
                   @click="if(confirm('Очистить все заказы?')){$store.app.orders=[];localStorage.removeItem('qb_orders');}"
@@ -607,7 +607,7 @@
        x-transition:leave-end="opacity-0"
        class="fixed inset-0 z-50 flex items-end" style="background:rgba(0,0,0,.7)">
     <div class="w-full rounded-t-3xl overflow-hidden"
-         style="background:#18181b;border-top:1px solid #27272a;max-height:82vh;overflow-y:auto"
+         style="background:var(--z900);border-top:1px solid var(--z700);max-height:82vh;overflow-y:auto"
          x-transition:enter="transition ease-out duration-350"
          x-transition:enter-start="transform translate-y-full"
          x-transition:enter-end="transform translate-y-0"
@@ -629,7 +629,7 @@
           <p class="text-sm" style="color:var(--z400)">Корзина пуста</p>
         </div>
         <template x-for="item in $store.app.cart" :key="item.id">
-          <div class="flex items-center gap-3 py-3 border-b" style="border-color:#27272a">
+          <div class="flex items-center gap-3 py-3 border-b" style="border-color:var(--z700)">
             <div class="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0" style="background:#27272a">
               <img :src="item.img" :alt="item.name" style="width:100%;height:100%;object-fit:cover"
                    :data-emoji="item.emoji"
@@ -662,6 +662,7 @@
   <script src="assets/js/app.js?v=20260409a"></script>
 </body>
 </html>
+
 
 
 
